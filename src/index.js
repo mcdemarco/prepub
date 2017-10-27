@@ -14,31 +14,57 @@ window.onload = function() {
 			export: function() {
 				var buffer = [];
 
-				var storyData = window.document.getElementsByTagName("tw-storydata");
-				if (storyData) {
-					buffer.push(this.buildPassage("StoryTitle","",storyData[0].getAttribute("name")));
+				//Find the story and infer the Twine version.
+
+				var el, twVersion, selectorAuthor, selectorCSS, selectorScript, 
+						selectorSubtitle, selectorPassages, passageTitleAttr;
+
+				if (document.getElementsByTagName('tw-storydata').length > 0) {
+					el = document.querySelector('tw-storydata');
+					twVersion = 2;
+					selectorAuthor = 'tw-passagedata[name=StoryAuthor]';
+					selectorCSS = '*[type="text/twine-css"]';
+					selectorScript = '*[type="text/twine-javascript"]';
+					selectorSubtitle = 'tw-passagedata[name=StorySubtitle]';
+					selectorPassages = 'tw-passagedata';
+					passageTitleAttr = 'name';
+				} else {
+					el = document.querySelector('#storeArea');
+					twVersion = 1;
+					selectorAuthor = 'div[tiddler=StoryAuthor]';
+					selectorCSS = '*[tags*="stylesheet"]';
+					selectorScript = '*[tags*="script"]';
+					selectorSubtitle = 'div[tiddler=StorySubtitle]';
+					selectorPassages = '*[tiddler]';
+					passageTitleAttr = 'tiddler';
 				}
 
-				var passages = window.document.getElementsByTagName("tw-passagedata");
+				var title = twVersion == 2 ? el.getAttribute('name') : (el.querySelector("div[tiddler=StoryTitle]") ? el.querySelector("div[tiddler=StoryTitle]").textContent : "Untitled Story");
+				var subtitle = el.querySelector(selectorSubtitle) ? el.querySelector(selectorSubtitle).innerHTML : "";
+				var author = el.querySelector(selectorAuthor) ? el.querySelector(selectorAuthor).textContent: "";
+
+				var startPassageTitle = twVersion == 2 ? el.querySelector('tw-passagedata[pid="' + el.getAttribute('startnode') + '"]').getAttribute(passageTitleAttr) : 'Start';
+
+				if (el) {
+					var titlePage = (subtitle ? "*" + subtitle + "* \n\n" : "") + (author ? "by " + author + "\n\n" : "") + '[' + startPassageTitle + ']';
+					buffer.push(this.buildPassage(title,titlePage));
+				}
+
+				var passages = document.querySelectorAll(selectorPassages);
 				for (var i = 0; i < passages.length; ++i) {
-					buffer.push(this.buildPassageFromElement(passages[i]));
+					var name = passages[i].getAttribute(passageTitleAttr);
+					if (!name) {
+						name = "Untitled Passage";
+					}
+					var content = passages[i].textContent;
+
+					buffer.push(this.buildPassage(name, content));
 				}
 
 				return buffer.join('');
 			},
 
 			
-			buildPassageFromElement: function(passage) {
-				var name = passage.getAttribute("name");
-				if (!name) {
-					name = "Untitled Passage";
-				}
-				var content = passage.textContent;
-				
-				return this.buildPassage(name, content);
-			},
-	
-	
 			buildPassage: function(title, content) {
 				var result = [];
 				

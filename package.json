@@ -6,7 +6,6 @@
   "license": "MIT",
   "repository": "https://bitbucket.org/mcdemarco/prepub",
   "dependencies": {
-    "lz-string": "^1.4.4",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
