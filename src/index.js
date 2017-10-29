@@ -19,49 +19,68 @@ window.onload = function() {
 				var el, twVersion, selectorAuthor, selectorCSS, selectorScript, 
 						selectorSubtitle, selectorPassages, passageTitleAttr;
 
+				var specialPassageList = ["StoryTitle", "StoryIncludes", "StoryColophon",
+																	"StoryAuthor", "StorySubtitle", "StoryMenu", "StorySettings",
+																	"StoryBanner", "StoryCaption", "StoryInit", "StoryShare", 
+																	"PassageDone", "PassageFooter", "PassageHeader", "PassageReady",
+																	"MenuOptions", "MenuShare"];
+
 				if (document.getElementsByTagName('tw-storydata').length > 0) {
 					el = document.querySelector('tw-storydata');
 					twVersion = 2;
-					selectorAuthor = 'tw-passagedata[name=StoryAuthor]';
-					selectorCSS = '*[type="text/twine-css"]';
-					selectorScript = '*[type="text/twine-javascript"]';
-					selectorSubtitle = 'tw-passagedata[name=StorySubtitle]';
 					selectorPassages = 'tw-passagedata';
 					passageTitleAttr = 'name';
+					selectorColophon = 'tw-passagedata[name=StoryColophon]';
 				} else {
 					el = document.querySelector('#storeArea');
 					twVersion = 1;
-					selectorAuthor = 'div[tiddler=StoryAuthor]';
-					selectorCSS = '*[tags*="stylesheet"]';
-					selectorScript = '*[tags*="script"]';
-					selectorSubtitle = 'div[tiddler=StorySubtitle]';
 					selectorPassages = '*[tiddler]';
 					passageTitleAttr = 'tiddler';
+					selectorColophon = 'div[tiddler=StoryColophon]';
 				}
-
-				var title = twVersion == 2 ? el.getAttribute('name') : (el.querySelector("div[tiddler=StoryTitle]") ? el.querySelector("div[tiddler=StoryTitle]").textContent : "Untitled Story");
-				var subtitle = el.querySelector(selectorSubtitle) ? el.querySelector(selectorSubtitle).innerHTML : "";
-				var author = el.querySelector(selectorAuthor) ? el.querySelector(selectorAuthor).textContent: "";
 
 				var startPassageTitle = twVersion == 2 ? el.querySelector('tw-passagedata[pid="' + el.getAttribute('startnode') + '"]').getAttribute(passageTitleAttr) : 'Start';
 
 				if (el) {
-					var titlePage = (subtitle ? "*" + subtitle + "* \n\n" : "") + (author ? "by " + author + "\n\n" : "") + '[' + startPassageTitle + ']';
-					buffer.push(this.buildPassage(title,titlePage));
+					buffer.push(this.buildTitlePage(twVersion, el, startPassageTitle));
 				}
 
 				var passages = document.querySelectorAll(selectorPassages);
 				for (var i = 0; i < passages.length; ++i) {
 					var name = passages[i].getAttribute(passageTitleAttr);
-					if (!name) {
+					if (!name)
 						name = "Untitled Passage";
-					}
+
+					if (specialPassageList.indexOf(name) > -1)
+						continue;
+
 					var content = passages[i].textContent;
 
 					buffer.push(this.buildPassage(name, content));
 				}
+				
+				if (el.querySelector(selectorColophon)) {
+					var coloContent = el.querySelector(selectorColophon).textContent + "\r\n\r\n[Restart][" + startPassageTitle + "]\r\n\r\n";
+					buffer.push(this.buildPassage("Colophon", coloContent));
+				}
 
 				return buffer.join('');
+			},
+
+			
+			buildTitlePage: function(twVersion, el, startPassageTitle) {
+				var selector = twVersion == 2 ? 'tw-passagedata[name=Story' : 'div[tiddler=Story';
+
+				var title = twVersion == 2 ? el.getAttribute('name') : (el.querySelector(selector + "Title]") ? el.querySelector(selector + "Title]").textContent : "Untitled Story");
+
+				var subtitle = el.querySelector(selector + "Subtitle]") ? el.querySelector(selector + "Subtitle]").innerHTML : "";
+				var author = el.querySelector(selector + "Author]") ? el.querySelector(selector + "Author]").textContent: "";
+
+				var colophonLink = el.querySelector(selector + "Colophon]") ? '[Colophon]\r\n\r\n' : "";
+				
+				var titlePage = (subtitle ? "*" + subtitle + "* \r\n\r\n" : "") + (author ? "by " + author + "\r\n\r\n" : "") + '[' + startPassageTitle + ']\r\n\r\n' + colophonLink;
+
+				return this.buildPassage(title,titlePage);
 			},
 
 			
@@ -69,7 +88,7 @@ window.onload = function() {
 				var result = [];
 				
 				result.push("## ",title);
-				result.push("\r\n", this.scrub(content),"\r\n\r\n");
+				result.push("\r\n\r\n", this.scrub(content),"\r\n\r\n");
 				
 				return result.join('');
 			},
@@ -114,6 +133,7 @@ window.onload = function() {
 					content = content.replace(/^##/gm, " ##");
 					content = content.replace(/\\</gm, "&lt;");
 					content = content.replace(/\\>/gm, "&gt;");
+					content = content.replace(/\\n\\n/gm, "\r\n\r\n");
 					content = this.markdownLinks(content);
 				}
 				return content;

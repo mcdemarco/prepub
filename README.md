@@ -16,7 +16,9 @@ PrePub converts wiki-style links in your story to [implicit header references](h
 
 PrePub will attempt to automatically save your story to a file named something like `prepub123456789.md`; if downloading fails, you may instead see the markdown in the browser.  You should cut and paste it into a new file in that case.
 
-PrePub leaves your Markdown formatting in place; you should use a post-processor like Pandoc to turn it into HTML, ePub, or mobi format.  To process with [pandoc](http://pandoc.org), try:
+PrePub leaves your Markdown formatting in place; you should use a post-processor like Pandoc to turn it into HTML, ePub, or mobi format.  
+
+To process with [pandoc](http://pandoc.org), try:
 
 	pandoc -o my-ebook.epub my-ebook.md --epub-chapter-level=2
 
@@ -26,6 +28,10 @@ PrePub leaves your Markdown formatting in place; you should use a post-processor
 
 ## Versions
 
+### 1.0.1
+
+Fix line endings in Twine 1 and improve handling of special passages.
+
 ### 1.0.0
 
 Initial version.
@@ -34,3 +40,6 @@ Initial version.
 
 Run `npm install` to install dependencies.  Run `grunt package` to create a release version for Twine under `dist/`.  Run `grunt --help` to list other grunt targets.
 
+## Sausage
+
+PrePub writes out DOS line endings for general compatibility.
