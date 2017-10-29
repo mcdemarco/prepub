@@ -1,6 +1,6 @@
 {
   "name": "PrePub",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Markdown story format for use with Pandoc.",
   "author": "M. C. DeMarco <mcd@mcdemarco.net>",
   "license": "MIT",

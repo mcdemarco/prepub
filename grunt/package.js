@@ -13,7 +13,7 @@ module.exports = function(grunt) {
 			name: pkg.name,
 			url: pkg.repository,
 			version: pkg.version,
-			proofing: false,
+			proofing: true,
 			source: grunt.file.read('build/format.html')
 		};
 
