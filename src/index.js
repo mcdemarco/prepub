@@ -60,7 +60,7 @@ window.onload = function() {
 				}
 				
 				if (el.querySelector(selectorColophon)) {
-					var coloContent = el.querySelector(selectorColophon).textContent + "\r\n\r\n[Restart][" + startPassageTitle + "]\r\n\r\n";
+					var coloContent = el.querySelector(selectorColophon).textContent + "\n\n[Restart][" + startPassageTitle + "]\n\n";
 					buffer.push(this.buildPassage("Colophon", coloContent));
 				}
 
@@ -76,9 +76,9 @@ window.onload = function() {
 				var subtitle = el.querySelector(selector + "Subtitle]") ? el.querySelector(selector + "Subtitle]").innerHTML : "";
 				var author = el.querySelector(selector + "Author]") ? el.querySelector(selector + "Author]").textContent: "";
 
-				var colophonLink = el.querySelector(selector + "Colophon]") ? '[Colophon]\r\n\r\n' : "";
+				var colophonLink = el.querySelector(selector + "Colophon]") ? '[Colophon]\n\n' : "";
 				
-				var titlePage = (subtitle ? "*" + subtitle + "* \r\n\r\n" : "") + '[' + startPassageTitle + ']\r\n\r\n' + colophonLink;
+				var titlePage = (subtitle ? "*" + subtitle + "* \n\n" : "") + '[' + startPassageTitle + ']\n\n' + colophonLink;
 
 				return this.buildTitle(title,author,titlePage);
 			},
@@ -88,7 +88,7 @@ window.onload = function() {
 				var result = [];
 				
 				result.push("## ",title);
-				result.push("\r\n\r\n", this.scrub(content),"\r\n\r\n");
+				result.push("\n\n", this.scrub(content),"\n\n");
 				
 				return result.join('');
 			},
@@ -97,10 +97,10 @@ window.onload = function() {
 			buildTitle: function(title, author, content) {
 				var result = [];
 				
-				result.push("% ", title, "\r\n\r\n");
+				result.push("% ", title, "\n");
 				if (author)
-					result.push("% ", author, "\r\n\r\n");
-				result.push("\r\n\r\n", this.scrub(content),"\r\n\r\n");
+					result.push("% ", author, "\n\n");
+				result.push("\n\n", this.scrub(content),"\n\n");
 				
 				return result.join('');
 			},
@@ -145,7 +145,7 @@ window.onload = function() {
 					content = content.replace(/^##/gm, " ##");
 					content = content.replace(/\\</gm, "&lt;");
 					content = content.replace(/\\>/gm, "&gt;");
-					content = content.replace(/\\n\\n/gm, "\r\n\r\n");
+					content = content.replace(/\\n\\n/gm, "\n\n");
 					content = this.markdownLinks(content);
 				}
 				return content;
