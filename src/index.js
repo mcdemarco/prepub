@@ -78,16 +78,28 @@ window.onload = function() {
 
 				var colophonLink = el.querySelector(selector + "Colophon]") ? '[Colophon]\r\n\r\n' : "";
 				
-				var titlePage = (subtitle ? "*" + subtitle + "* \r\n\r\n" : "") + (author ? "by " + author + "\r\n\r\n" : "") + '[' + startPassageTitle + ']\r\n\r\n' + colophonLink;
+				var titlePage = (subtitle ? "*" + subtitle + "* \r\n\r\n" : "") + '[' + startPassageTitle + ']\r\n\r\n' + colophonLink;
 
-				return this.buildPassage(title,titlePage);
+				return this.buildTitle(title,author,titlePage);
 			},
 
-			
+
 			buildPassage: function(title, content) {
 				var result = [];
 				
 				result.push("## ",title);
+				result.push("\r\n\r\n", this.scrub(content),"\r\n\r\n");
+				
+				return result.join('');
+			},
+
+
+			buildTitle: function(title, author, content) {
+				var result = [];
+				
+				result.push("% ", title, "\r\n\r\n");
+				if (author)
+					result.push("% ", author, "\r\n\r\n");
 				result.push("\r\n\r\n", this.scrub(content),"\r\n\r\n");
 				
 				return result.join('');
