@@ -9,13 +9,12 @@
 		<script>
 /**
  * PrePub - Twine 2 Markdown Export Story Format
- * Based on Enscree
  * 
- * Copyright (c) 2017 M. C. DeMarco
+ * Copyright (c) 2018 M. C. DeMarco
  * https://www.mcdemarco.net/tools/scree/prepub/
  *
- * This license applies exclusively to the PrePub story format for Twine 2. No ownership of, nor
- * licensing restrictions on, the content within the generated story are stated or implied.
+ * This (MIT) license applies exclusively to the PrePub story format for Twine 2. No ownership of, 
+ * nor licensing restrictions on, the content within the generated story are stated or implied.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -34,23 +33,55 @@
  */
 		</script>
 <%= script %>
+		<style>
+		 .info {font-style:italic; color: #b5b5b5;}
+		 table {caption-side:bottom;}
+		 th, td {border: 1px solid #dedede; padding: 3px; text-align:center; font-weight:normal;}
+		 td {font-size: x-large;}
+		</style>
+
 	</head>
 	<body>
 		<h1>PrePub Conversion of {{STORY_NAME}}</h1>
 
 		<p>
-			<input type="radio" id="noNo" name="numbering" value="-1" />
-			<label for="numberNo">Hide passage names</label>
-			<input type="radio" id="numberNo" name="numbering" value="0" checked />
-			<label for="numberNo">Show passage names</label>
-			<input type="radio" id="numberYes" name="numbering" value="1" />
-			<label for="numberYes">Show (arbitrary) paragraph numbers</label>
+			<input type="radio" id="nothing" name="numbering" value="nothing" />
+			<label for="nothing">Hide passage names</label>
+			&nbsp;
+			<span class="info"> There will be no header at all on passages.</span>
+			<br/>
+			<input type="radio" id="names" name="numbering" value="names" checked />
+			<label for="names">Show passage names</label><br/>
+			<input type="radio" id="numbers" name="numbering" value="numbers" />
+			<label for="numbers">Show paragraph numbers </label>
+			&nbsp;
+			<span class="info"> Paragraph numbers are arbitrary (though sequential) and are not inserted into links.</span>  
+			<br/>
+			<input type="radio" id="symbol" name="numbering" value="symbol" />
+			<label for="symbol">Show a character divider </label>
+			&nbsp;
+			<span class="info"> Use a numeric entity reference (<i>e.g.,</i> &amp;#167;) instead of the named reference (&amp;sect;).</span>
+			<br/>
+			<input type="radio" id="image" name="numbering" value="image" />
+			<label for="image">Show an image divider </label>
+			&nbsp;
+			<span class="info"> Provide a path relative to the directory you will be running pandoc in.</span>
+			<br/>
+			<label for="symbolInput">Divider/Image: </label> 
+			<input type="text" id="symbolInput" name="symbolInput" placeholder="&amp;#167;" value="" />
+			<br/>
 			<button type="button" onclick="PrePub.convert();">Regenerate</button>
 		</p>
 
-		<p>See the <a href="http://mcdemarco.net/tools/scree/prepub/">PrePub web page</a> for help converting the downloaded file to ePub using Pandoc.</p>
+		<p>Certain options may require the included stylesheet.  You can also change centering and size of the headers/numbers/characters there.</p>
 
-		<p>Certain options may require the included stylesheet.</p>
+		<p>See the <a href="http://mcdemarco.net/tools/scree/prepub/" target="_blank">PrePub web page</a> for help converting the downloaded file to ePub using Pandoc and PrePub's stylesheet.</p>
+
+		<table>
+			<tr><th>&amp;#42;</th><th>&amp;#167;</th><th>&amp;#182;</th><th>&amp;#183;</th><th>&amp;#8224;</th><th>&amp;#8225;</th><th>&amp;#8226;</th><th>&amp;#8727;</th><th>&amp;#8982;</th><th>&amp;#10535;</th><th>&amp;#10803;</th></tr>
+			<tr><td>&#42;</td><td>&#167;</td><td>&#182;</td><td>&#183;</td><td>&#8224;</td><td>&#8225;</td><td>&#8226;</td><td>&#8727;</td><td>&#8982;</td><td>&#10535;</td><td>&#10803;</td></tr>
+			<caption>Sample character entities; see <a href="https://dev.w3.org/html5/html-author/charref" target="_blank">this page</a> for more.</caption>
+		</table>
 
 		<pre id="output">
 		

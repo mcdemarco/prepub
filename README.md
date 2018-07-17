@@ -18,7 +18,9 @@ PrePub converts wiki-style links in your story to [implicit header references](h
 
 While some ePub formats may support some JavaScript coding, PrePub ignores any JavaScript.  Styling should be done in Markdown, not in old-style wiki formatting (which is optional in Harlowe and expected in SugarCube), which will be left in place.  (You can alter it in the Markdown file before compiling to ePub using a good text editor.)  HTML may or may not be preserved.
 
-PrePub will attempt to automatically save your story to a Markdown file named something like `prepub123456789.md`; if downloading fails, you may instead see the markdown in the browser.  You should cut and paste it into a new file in that case.  If you want to select a different section numbering option, choose the appropriate radio button and click `Regenerate` to get a second Markdown file.
+PrePub will attempt to automatically save your story to a Markdown file named something like `prepub123456789.md`; if downloading fails, you may instead see the markdown in the browser.  You should cut and paste it into a new file in that case.  If you want to select a different passage numbering option, choose the appropriate radio button and click `Regenerate` to get a second Markdown file.  The options include no passage header at all, the passage name (the default), sequential numbering, a single character divider, or an image divider.
+
+## Making the ePub
 
 You should use a post-processor like [pandoc](http://pandoc.org) to turn it into HTML, ePub, or mobi format; *e.g.*:
 
@@ -26,17 +28,23 @@ You should use a post-processor like [pandoc](http://pandoc.org) to turn it into
 
 You will need the `prepub.css` file mentioned above in order to remove chapter headers or turn them into gamebook-style paragraph numbers.  Feel free to add additional styles to the file as well.
 
-[Kent Bye's advice](https://puppet.com/blog/how-we-automated-our-ebook-builds-pandoc-and-kindlegen) includes more flags to set to spiff up your output (though I've edited some of them for Twine purposes):
+[Kent Bye's advice](https://puppet.com/blog/how-we-automated-our-ebook-builds-pandoc-and-kindlegen) includes more flags to set to spiff up your output (I've updated some of them for Twine purposes):
 
-	pandoc -o my-ebook.epub title.txt my-ebook.md --epub-cover-image=cover.jpg --epub-metadata=metadata.xml --toc-depth=1 --css=prepub.css
+	pandoc -o my-ebook.epub title.txt my-ebook.md --epub-cover-image=cover.jpg --epub-metadata=metadata.xml --toc-depth=1 --css=prepub.css --css=mySpiffyStyles.css
 
-Note that `--epub-stylesheet` has become `--css` in newer versions of pandoc.
+Note that `--epub-stylesheet` has become `--css` in newer versions of pandoc, with which you can also incorporate multiple stylesheets.
+
+### Tweaking the ePub
+
+Most changes can be made in the stylesheet; you can make the passage headers/numbers/characters/images bigger or smaller there, as well as centering or coloring them as desired.
+
+If you're going for a continuous paragraph style like in old gamebooks, you can change `--epub-chapter-level=2` to `--epub-chapter-level=1` and remove the line in the stylesheet that handles 2-page layouts, but this is in no way a recommendation.
 
 ## Versions
 
 ### 1.1.0
 
-Add some numbering options and move the start passage to the beginning of the story.
+Add some passage header options and move the start passage to the beginning of the story.
 
 ### 1.0.1
 
