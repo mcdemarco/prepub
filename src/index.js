@@ -74,7 +74,7 @@ window.onload = function() {
 
 				//Check numbering scheme.
 				var numbering = document.querySelector("input[name=numbering]:checked").value;
-
+				
 				for (var j = 0; j < reorderedPassages.length; j++) {
 					buffer.push(this.buildPassage(reorderedPassages[j], numbering, j+1));
 				}
@@ -108,12 +108,16 @@ window.onload = function() {
 				var result = [];
 
 				result.push("## ", passageObj.name, " {.unnumbered");
-				if (numbering)
+				if (numbering != "names")
 					 result.push(" .prepub_hidden"); 
 				result.push("}");
 
-				if (numbering == 1)
+				if (numbering == "numbers")
 					result.push("\n### ", number, " {.unnumbered}");
+				else if (numbering == "symbol")
+					result.push("\n### ", document.querySelector("#symbolInput").value, " {.unnumbered}");
+				else if (numbering == "image")
+					result.push("\n### ", "![divider image](" + document.querySelector("#symbolInput").value + ")", " {.unnumbered}");
 
 				result.push("\n\n", this.scrub(passageObj.content), "\n\n");
 				
