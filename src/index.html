@@ -36,6 +36,22 @@
 <%= script %>
 	</head>
 	<body>
+		<h1>PrePub Conversion of {{STORY_NAME}}</h1>
+
+		<p>
+			<input type="radio" id="noNo" name="numbering" value="-1" />
+			<label for="numberNo">Hide passage names</label>
+			<input type="radio" id="numberNo" name="numbering" value="0" checked />
+			<label for="numberNo">Show passage names</label>
+			<input type="radio" id="numberYes" name="numbering" value="1" />
+			<label for="numberYes">Show (arbitrary) paragraph numbers</label>
+			<button type="button" onclick="PrePub.convert();">Regenerate</button>
+		</p>
+
+		<p>See the <a href="http://mcdemarco.net/tools/scree/prepub/">PrePub web page</a> for help converting the downloaded file to ePub using Pandoc.</p>
+
+		<p>Certain options may require the included stylesheet.</p>
+
 		<pre id="output">
 		
 		</pre>

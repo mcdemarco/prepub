@@ -17,7 +17,7 @@ window.onload = function() {
 				//Find the story and infer the Twine version.
 
 				var el, twVersion, selectorAuthor, selectorCSS, selectorScript, 
-						selectorSubtitle, selectorPassages, passageTitleAttr;
+						selectorSubtitle, selectorPassages, passageTitleAttr, passageIdAttr, startPassageId;
 
 				var specialPassageList = ["StoryTitle", "StoryIncludes", "StoryColophon",
 																	"StoryAuthor", "StorySubtitle", "StoryMenu", "StorySettings",
@@ -30,6 +30,8 @@ window.onload = function() {
 					twVersion = 2;
 					selectorPassages = 'tw-passagedata';
 					passageTitleAttr = 'name';
+					passageIdAttr = 'pid';
+					startPassageId = el.getAttribute('startnode');
 					selectorColophon = 'tw-passagedata[name=StoryColophon]';
 				} else {
 					el = document.querySelector('#storeArea');
@@ -39,29 +41,47 @@ window.onload = function() {
 					selectorColophon = 'div[tiddler=StoryColophon]';
 				}
 
-				var startPassageTitle = twVersion == 2 ? el.querySelector('tw-passagedata[pid="' + el.getAttribute('startnode') + '"]').getAttribute(passageTitleAttr) : 'Start';
+				var startPassageTitle = twVersion == 2 ? el.querySelector('tw-passagedata[pid="' + startPassageId + '"]').getAttribute(passageTitleAttr) : 'Start';
 
 				if (el) {
 					buffer.push(this.buildTitlePage(twVersion, el, startPassageTitle));
 				}
 
 				var passages = document.querySelectorAll(selectorPassages);
-				for (var i = 0; i < passages.length; ++i) {
-					var name = passages[i].getAttribute(passageTitleAttr);
-					if (!name)
-						name = "Untitled Passage";
+				var startIdx = 0;
 
-					if (specialPassageList.indexOf(name) > -1)
+				//create reordering array
+				var reorderedPassages = [];
+
+				for (var i = 0; i < passages.length; ++i) {
+					var name = passages[i].getAttribute(passageTitleAttr) ? passages[i].getAttribute(passageTitleAttr) : "Untitled Passage";
+
+					if (specialPassageList.indexOf(name) > -1) {
 						continue;
+					}
+
+					if ((twVersion == 1 && name == "Start") || (twVersion == 2 && passages[i].getAttribute(passageIdAttr) == startPassageId))
+						startIdx = reorderedPassages.length;
 
 					var content = passages[i].textContent;
 
-					buffer.push(this.buildPassage(name, content));
+					reorderedPassages.push({name: name, content: content});
+				}
+
+				//move start passage to beginning
+				var start = reorderedPassages.splice(startIdx,1);
+				reorderedPassages = start.concat(reorderedPassages);
+
+				//Check numbering scheme.
+				var numbering = document.querySelector("input[name=numbering]:checked").value;
+
+				for (var j = 0; j < reorderedPassages.length; j++) {
+					buffer.push(this.buildPassage(reorderedPassages[j], numbering, j+1));
 				}
 				
 				if (el.querySelector(selectorColophon)) {
 					var coloContent = el.querySelector(selectorColophon).textContent + "\n\n[Restart][" + startPassageTitle + "]\n\n";
-					buffer.push(this.buildPassage("Colophon", coloContent));
+					buffer.push(this.buildPassage({name: "Colophon", content: coloContent},numbering));
 				}
 
 				return buffer.join('');
@@ -78,17 +98,24 @@ window.onload = function() {
 
 				var colophonLink = el.querySelector(selector + "Colophon]") ? '[Colophon]\n\n' : "";
 				
-				var titlePage = (subtitle ? "*" + subtitle + "* \n\n" : "") + '[' + startPassageTitle + ']\n\n' + colophonLink;
+				var titlePage = (subtitle ? "*" + subtitle + "* \n\n" : "") + /*'[' + startPassageTitle + ']\n\n' + */ colophonLink;
 
 				return this.buildTitle(title,author,titlePage);
 			},
 
 
-			buildPassage: function(title, content) {
+			buildPassage: function(passageObj, numbering, number) {
 				var result = [];
-				
-				result.push("## ",title);
-				result.push("\n\n", this.scrub(content),"\n\n");
+
+				result.push("## ", passageObj.name, " {.unnumbered");
+				if (numbering)
+					 result.push(" .prepub_hidden"); 
+				result.push("}");
+
+				if (numbering == 1)
+					result.push("\n### ", number, " {.unnumbered}");
+
+				result.push("\n\n", this.scrub(passageObj.content), "\n\n");
 				
 				return result.join('');
 			},
@@ -96,11 +123,19 @@ window.onload = function() {
 
 			buildTitle: function(title, author, content) {
 				var result = [];
-				
-				result.push("% ", title, "\n");
-				if (author)
-					result.push("% ", author, "\n\n");
-				result.push("\n\n", this.scrub(content),"\n\n");
+
+				//yaml header
+				result.push("---","\n");
+				result.push("title:","\n");
+				result.push("- type: main", "\n");
+				result.push("  text: ", title, "\n");
+
+				if (author) {
+					result.push("creator:","\n");
+					result.push("- role: author", "\n");
+					result.push("  text: ", author, "\n");
+				}
+				result.push("---\n\n", this.scrub(content), "\n\n");
 				
 				return result.join('');
 			},
