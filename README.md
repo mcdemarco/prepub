@@ -40,6 +40,10 @@ Most changes can be made in the stylesheet; you can make the passage headers/num
 
 If you're going for a continuous paragraph style like in old gamebooks, you can change `--epub-chapter-level=2` to `--epub-chapter-level=1` and remove the line in the stylesheet that handles 2-page layouts, but this is in no way a recommendation.
 
+### Making Kindle books
+
+You can convert your ePub directly to Kindle using [KindleGen](https://www.amazon.com/gp/feature.html?docId=1000765211) or the [Kindle Previewer](http://www.amazon.com/kindleformat/kindlepreviewer).
+
 ## Versions
 
 ### 1.1.0
