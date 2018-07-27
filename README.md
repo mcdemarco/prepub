@@ -14,7 +14,7 @@ You should also download [prepub.css](https://mcdemarco.net/tools/scree/prepub/p
 
 ## What it does
 
-PrePub converts wiki-style links in your story to [implicit header references](https://pandoc.org/MANUAL.html#extension-implicit_header_references) (part of Pandoc's Markdown extensions).  It moves your start passage to the start of the file, if it isn't there already, and removes all special passages.  Otherwise, it leaves the text of your story in place and in order.
+PrePub converts wiki-style links in your story to [implicit header references](https://pandoc.org/MANUAL.html#extension-implicit_header_references) (part of Pandoc's Markdown extensions).  It moves your start passage to the start of the file, if it isn't there already, your colophon to the end, and removes any other special passages.  Otherwise, it leaves the passages of your story in place and in order, unless you choose to shuffle them.
 
 While some ePub formats may support some JavaScript coding, PrePub ignores any JavaScript.  Styling should be done in Markdown, not in old-style wiki formatting (which is optional in Harlowe and expected in SugarCube), which will be left in place.  (You can alter it in the Markdown file before compiling to ePub using a good text editor.)  HTML may or may not be preserved.
 
@@ -48,7 +48,7 @@ You can convert your ePub directly to Kindle using [KindleGen](https://www.amazo
 
 ### 1.1.0
 
-Add some passage header options and move the start passage to the beginning of the story.
+Add some passage header options including shuffling, and move the start passage to the beginning of the story.
 
 ### 1.0.1
 

@@ -68,8 +68,21 @@ window.onload = function() {
 					reorderedPassages.push({name: name, content: content});
 				}
 
-				//move start passage to beginning
+				//Remove start passage from list.
 				var start = reorderedPassages.splice(startIdx,1);
+
+				if (document.getElementById("shuffle").checked) {
+					//Shuffle the others.
+					var r, s, temp;
+					for (s = reorderedPassages.length - 1; s > 0; s--) {
+						r = Math.floor(Math.random() * (s + 1));
+						temp = reorderedPassages[s];
+						reorderedPassages[s] = reorderedPassages[r];
+						reorderedPassages[r] = temp;
+					}
+				}
+
+				//Reinsert start at beginning.
 				reorderedPassages = start.concat(reorderedPassages);
 
 				//Check numbering scheme.

@@ -51,24 +51,29 @@
 			<span class="info"> There will be no header at all on passages.</span>
 			<br/>
 			<input type="radio" id="names" name="numbering" value="names" checked />
-			<label for="names">Show passage names</label><br/>
+			<label for="names">Use passage names for headers</label><br/>
 			<input type="radio" id="numbers" name="numbering" value="numbers" />
-			<label for="numbers">Show paragraph numbers </label>
+			<label for="numbers">Use paragraph numbers </label>
 			&nbsp;
 			<span class="info"> Paragraph numbers are arbitrary (though sequential) and are not inserted into links.</span>  
 			<br/>
 			<input type="radio" id="symbol" name="numbering" value="symbol" />
-			<label for="symbol">Show a character divider </label>
+			<label for="symbol">Use a character divider </label>
 			&nbsp;
 			<span class="info"> Use a numeric entity reference (<i>e.g.,</i> &amp;#167;) instead of the named reference (&amp;sect;).</span>
 			<br/>
 			<input type="radio" id="image" name="numbering" value="image" />
-			<label for="image">Show an image divider </label>
+			<label for="image">Use an image divider </label>
 			&nbsp;
 			<span class="info"> Provide a path relative to the directory you will be running pandoc in.</span>
 			<br/>
 			<label for="symbolInput">Divider/Image: </label> 
 			<input type="text" id="symbolInput" name="symbolInput" placeholder="&amp;#167;" value="" />
+			<br/>
+			<input type="checkbox" id="shuffle" name="shuffle" value="1" />
+			<label for="shuffle">Shuffle passages </label>
+			&nbsp;
+			<span class="info"> The start passage will remain at the beginning.</span>
 			<br/>
 			<button type="button" onclick="PrePub.convert();">Regenerate</button>
 		</p>
