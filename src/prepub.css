@@ -1,0 +1,27 @@
+/* This defines styles and classes used in the book (pandoc defaults, feel free to edit) */
+body { margin: 5%; text-align: justify; font-size: medium; }
+code { font-family: monospace; }
+h1 { text-align: left; }
+h2 { text-align: left; } /* passage titles are h2's */
+h3 { text-align: center; } /* paragraph numbers and character dividers are h3's; you can change their size here */
+h4 { text-align: left; }
+h5 { text-align: left; }
+h6 { text-align: left; }
+h1.title { }
+h2.author { }
+h3.date { }
+ol.toc { padding: 0; margin-left: 1em; }
+ol.toc li { list-style-type: none; margin: 0; padding: 0; }
+a.footnoteRef { vertical-align: super; }
+em, em em em, em em em em em { font-style: italic;}
+em em, em em em em { font-style: normal; }
+
+/* hide table of contents; if you restore your toc for some reason, remove this. */
+div#toc, nav#toc { display: none; }
+
+/* these are hidden (but retained) in some of the passage numbering options to allow navigation */
+div.prepub_hidden h2, section.prepub_hidden h2 { display: none; }
+
+/* this is an attempt to make 2-page layouts work better, but they still look funny */
+div.level2, section.level2 { page-break-before: left; } 
+
