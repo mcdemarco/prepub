@@ -17,7 +17,7 @@ window.onload = function() {
 				//Find the story and infer the Twine version.
 
 				var el, twVersion, selectorAuthor, selectorCSS, selectorScript, 
-						selectorSubtitle, selectorPassages, passageTitleAttr;
+						selectorSubtitle, selectorPassages, passageTitleAttr, passageIdAttr, startPassageId;
 
 				var specialPassageList = ["StoryTitle", "StoryIncludes", "StoryColophon",
 																	"StoryAuthor", "StorySubtitle", "StoryMenu", "StorySettings",
@@ -30,6 +30,8 @@ window.onload = function() {
 					twVersion = 2;
 					selectorPassages = 'tw-passagedata';
 					passageTitleAttr = 'name';
+					passageIdAttr = 'pid';
+					startPassageId = el.getAttribute('startnode');
 					selectorColophon = 'tw-passagedata[name=StoryColophon]';
 				} else {
 					el = document.querySelector('#storeArea');
@@ -39,29 +41,60 @@ window.onload = function() {
 					selectorColophon = 'div[tiddler=StoryColophon]';
 				}
 
-				var startPassageTitle = twVersion == 2 ? el.querySelector('tw-passagedata[pid="' + el.getAttribute('startnode') + '"]').getAttribute(passageTitleAttr) : 'Start';
+				var startPassageTitle = twVersion == 2 ? el.querySelector('tw-passagedata[pid="' + startPassageId + '"]').getAttribute(passageTitleAttr) : 'Start';
 
 				if (el) {
 					buffer.push(this.buildTitlePage(twVersion, el, startPassageTitle));
 				}
 
 				var passages = document.querySelectorAll(selectorPassages);
-				for (var i = 0; i < passages.length; ++i) {
-					var name = passages[i].getAttribute(passageTitleAttr);
-					if (!name)
-						name = "Untitled Passage";
+				var startIdx = 0;
 
-					if (specialPassageList.indexOf(name) > -1)
+				//create reordering array
+				var reorderedPassages = [];
+
+				for (var i = 0; i < passages.length; ++i) {
+					var name = passages[i].getAttribute(passageTitleAttr) ? passages[i].getAttribute(passageTitleAttr) : "Untitled Passage";
+
+					if (specialPassageList.indexOf(name) > -1) {
 						continue;
+					}
+
+					if ((twVersion == 1 && name == "Start") || (twVersion == 2 && passages[i].getAttribute(passageIdAttr) == startPassageId))
+						startIdx = reorderedPassages.length;
 
 					var content = passages[i].textContent;
 
-					buffer.push(this.buildPassage(name, content));
+					reorderedPassages.push({name: name, content: content});
+				}
+
+				//Remove start passage from list.
+				var start = reorderedPassages.splice(startIdx,1);
+
+				if (document.getElementById("shuffle").checked) {
+					//Shuffle the others.
+					var r, s, temp;
+					for (s = reorderedPassages.length - 1; s > 0; s--) {
+						r = Math.floor(Math.random() * (s + 1));
+						temp = reorderedPassages[s];
+						reorderedPassages[s] = reorderedPassages[r];
+						reorderedPassages[r] = temp;
+					}
+				}
+
+				//Reinsert start at beginning.
+				reorderedPassages = start.concat(reorderedPassages);
+
+				//Check numbering scheme.
+				var numbering = document.querySelector("input[name=numbering]:checked").value;
+				
+				for (var j = 0; j < reorderedPassages.length; j++) {
+					buffer.push(this.buildPassage(reorderedPassages[j], numbering, j+1));
 				}
 				
 				if (el.querySelector(selectorColophon)) {
-					var coloContent = el.querySelector(selectorColophon).textContent + "\r\n\r\n[Restart][" + startPassageTitle + "]\r\n\r\n";
-					buffer.push(this.buildPassage("Colophon", coloContent));
+					var coloContent = el.querySelector(selectorColophon).textContent + "\n\n[Restart][" + startPassageTitle + "]\n\n";
+					buffer.push(this.buildPassage({name: "Colophon", content: coloContent},numbering));
 				}
 
 				return buffer.join('');
@@ -76,19 +109,50 @@ window.onload = function() {
 				var subtitle = el.querySelector(selector + "Subtitle]") ? el.querySelector(selector + "Subtitle]").innerHTML : "";
 				var author = el.querySelector(selector + "Author]") ? el.querySelector(selector + "Author]").textContent: "";
 
-				var colophonLink = el.querySelector(selector + "Colophon]") ? '[Colophon]\r\n\r\n' : "";
+				var colophonLink = el.querySelector(selector + "Colophon]") ? '[Colophon]\n\n' : "";
 				
-				var titlePage = (subtitle ? "*" + subtitle + "* \r\n\r\n" : "") + (author ? "by " + author + "\r\n\r\n" : "") + '[' + startPassageTitle + ']\r\n\r\n' + colophonLink;
+				var titlePage = (subtitle ? "*" + subtitle + "* \n\n" : "") + /*'[' + startPassageTitle + ']\n\n' + */ colophonLink;
 
-				return this.buildPassage(title,titlePage);
+				return this.buildTitle(title,author,titlePage);
 			},
 
-			
-			buildPassage: function(title, content) {
+
+			buildPassage: function(passageObj, numbering, number) {
 				var result = [];
+
+				result.push("## ", passageObj.name, " {.unnumbered");
+				if (numbering != "names")
+					 result.push(" .prepub_hidden"); 
+				result.push("}");
+
+				if (numbering == "numbers")
+					result.push("\n### ", number, " {.unnumbered}");
+				else if (numbering == "symbol")
+					result.push("\n### ", document.querySelector("#symbolInput").value, " {.unnumbered}");
+				else if (numbering == "image")
+					result.push("\n### ", "![divider image](" + document.querySelector("#symbolInput").value + ")", " {.unnumbered}");
+
+				result.push("\n\n", this.scrub(passageObj.content), "\n\n");
 				
-				result.push("## ",title);
-				result.push("\r\n\r\n", this.scrub(content),"\r\n\r\n");
+				return result.join('');
+			},
+
+
+			buildTitle: function(title, author, content) {
+				var result = [];
+
+				//yaml header
+				result.push("---","\n");
+				result.push("title:","\n");
+				result.push("- type: main", "\n");
+				result.push("  text: ", title, "\n");
+
+				if (author) {
+					result.push("creator:","\n");
+					result.push("- role: author", "\n");
+					result.push("  text: ", author, "\n");
+				}
+				result.push("---\n\n", this.scrub(content), "\n\n");
 				
 				return result.join('');
 			},
@@ -133,7 +197,7 @@ window.onload = function() {
 					content = content.replace(/^##/gm, " ##");
 					content = content.replace(/\\</gm, "&lt;");
 					content = content.replace(/\\>/gm, "&gt;");
-					content = content.replace(/\\n\\n/gm, "\r\n\r\n");
+					content = content.replace(/\\n\\n/gm, "\n\n");
 					content = this.markdownLinks(content);
 				}
 				return content;
