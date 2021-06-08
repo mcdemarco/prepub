@@ -105,15 +105,13 @@ window.onload = function() {
 				var selector = twVersion == 2 ? 'tw-passagedata[name=Story' : 'div[tiddler=Story';
 
 				var title = twVersion == 2 ? el.getAttribute('name') : (el.querySelector(selector + "Title]") ? el.querySelector(selector + "Title]").textContent : "Untitled Story");
-
 				var subtitle = el.querySelector(selector + "Subtitle]") ? el.querySelector(selector + "Subtitle]").innerHTML : "";
 				var author = el.querySelector(selector + "Author]") ? el.querySelector(selector + "Author]").textContent: "";
-
 				var colophonLink = el.querySelector(selector + "Colophon]") ? '[Colophon]\n\n' : "";
 				
-				var titlePage = (subtitle ? "*" + subtitle + "* \n\n" : "") + /*'[' + startPassageTitle + ']\n\n' + */ colophonLink;
+				var yaml = this.buildYaml(title,subtitle,author);
 
-				return this.buildTitle(title,author,titlePage);
+				return yaml + this.scrub(colophonLink) + "\n\n";
 			},
 
 
@@ -138,21 +136,21 @@ window.onload = function() {
 			},
 
 
-			buildTitle: function(title, author, content) {
+			buildYaml: function(title, subtitle, author) {
 				var result = [];
 
 				//yaml header
 				result.push("---","\n");
-				result.push("title:","\n");
-				result.push("- type: main", "\n");
-				result.push("  text: ", title, "\n");
+				result.push("title: ", title, "\n");
 
-				if (author) {
-					result.push("creator:","\n");
-					result.push("- role: author", "\n");
-					result.push("  text: ", author, "\n");
+				if (subtitle) {
+					result.push("subtitle: ", subtitle, "\n");
 				}
-				result.push("---\n\n", this.scrub(content), "\n\n");
+				if (author) {
+					result.push("author: ", author, "\n");
+				}
+
+				result.push("---\n\n");
 				
 				return result.join('');
 			},
