@@ -19,11 +19,11 @@ window.onload = function() {
 				var el, twVersion, selectorAuthor, selectorCSS, selectorScript, 
 						selectorSubtitle, selectorPassages, passageTitleAttr, passageIdAttr, startPassageId;
 
-				var specialPassageList = ["StoryTitle", "StoryIncludes", "StoryColophon",
+				var specialPassageList = ["StoryTitle", "StoryIncludes", "StoryColophon", "StoryData",
 																	"StoryAuthor", "StorySubtitle", "StoryMenu", "StorySettings",
 																	"StoryBanner", "StoryCaption", "StoryInit", "StoryShare", 
 																	"PassageDone", "PassageFooter", "PassageHeader", "PassageReady",
-																	"MenuOptions", "MenuShare"];
+																	"MenuOptions", "MenuShare", "DotGraphSettings"];
 
 				if (document.getElementsByTagName('tw-storydata').length > 0) {
 					el = document.querySelector('tw-storydata');
