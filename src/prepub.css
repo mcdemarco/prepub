@@ -16,12 +16,11 @@ a.footnoteRef { vertical-align: super; }
 em, em em em, em em em em em { font-style: italic;}
 em em, em em em em { font-style: normal; }
 
-/* hide table of contents; if you restore your toc for some reason, remove this. */
+/* Hide table of contents; if you restore your toc for some reason, remove this. */
 div#toc, nav#toc { display: none; }
 
-/* these are hidden (but retained) in some of the passage numbering options to allow navigation */
+/* These are hidden (but retained) in some of the passage numbering options to allow navigation. */
 div.prepub_hidden h2, section.prepub_hidden h2 { display: none; }
 
-/* this is an attempt to make 2-page layouts work better, but they still look funny */
+/* This is an attempt to make 2-page layouts work better, but they still look funny.  Remove for continuous paragraphs. */
 div.level2, section.level2 { page-break-before: left; } 
-
