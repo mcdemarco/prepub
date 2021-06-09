@@ -1,0 +1,16 @@
+# pandoc defaults file for pdf output, corresponding to the command line: 
+#     pandoc -o result.pdf my-story.md --pdf-engine=wkhtmltopdf --toc-depth=1 --css=prepub.css
+
+from: markdown
+to: pdf
+output-file: result.pdf
+
+pdf-engine: wkhtmltopdf
+
+# This is the default.
+table-of-contents: false
+
+toc-depth: 1
+
+css:
+- ${.}/prepub.css

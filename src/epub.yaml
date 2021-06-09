@@ -1,0 +1,18 @@
+# pandoc defaults file for epub output, corresponding to the command line: 
+#     pandoc -o result.epub my-story.md --epub-chapter-level=2 --toc-depth=1 --css=prepub.css
+
+from: markdown
+to: epub
+output-file: result.epub
+
+# This is the default.
+table-of-contents: false
+
+toc-depth: 1
+
+# Reduce to 1 for a continuous paragraph style like in old gamebooks.
+epub-chapter-level: 2
+
+# The prepub css file is needed for some options, and harmless otherwise.
+css:
+- ${.}/prepub.css

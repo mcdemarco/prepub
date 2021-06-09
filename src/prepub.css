@@ -16,11 +16,8 @@ a.footnoteRef { vertical-align: super; }
 em, em em em, em em em em em { font-style: italic;}
 em em, em em em em { font-style: normal; }
 
-/* Hide table of contents; if you restore your toc for some reason, remove this. */
-div#toc, nav#toc { display: none; }
-
 /* These are hidden (but retained) in some of the passage numbering options to allow navigation. */
-div.prepub_hidden h2, section.prepub_hidden h2 { display: none; }
+.prepub_hidden h2, h2.prepub_hidden { position: absolute; visibility: hidden; }
 
 /* This is an attempt to make 2-page layouts work better, but they still look funny.  Remove for continuous paragraphs. */
-div.level2, section.level2 { page-break-before: left; } 
+.level2 { page-break-before: left; } 

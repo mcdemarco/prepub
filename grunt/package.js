@@ -1,13 +1,15 @@
 module.exports = function(grunt) {
 	var pkg = require('../package.json');
 
-	grunt.registerTask('package:stylesheet', function() {
-		grunt.file.copy('src/prepub.css', 'dist/Twine2/' + pkg.name + '/prepub.css');
-		grunt.file.copy('src/prepub.css', 'dist/Twine1/' + pkg.name + '/prepub.css');
+	grunt.registerTask('package:support', function() {
+		grunt.file.copy('src/prepub.css', 'dist/extras/prepub.css');
+		grunt.file.copy('src/epub.yaml', 'dist/extras/epub.yaml');
+		grunt.file.copy('src/html.yaml', 'dist/extras/html.yaml');
+		grunt.file.copy('src/pdf.yaml', 'dist/extras/pdf.yaml');
 	});
 
 	grunt.registerTask('package:icon', function() {
-		grunt.file.copy('src/icon.svg', 'dist/Twine2/' + pkg.name + '/icon.svg');
+		grunt.file.copy('src/icon.svg', 'dist/Twine2/icon.svg');
 	});
 
 	grunt.registerTask('package:format', function() {
@@ -23,14 +25,14 @@ module.exports = function(grunt) {
 		};
 
 		grunt.file.write(
-			'dist/Twine2/' + pkg.name + '/format.js',
+			'dist/Twine2/format.js',
 			'window.storyFormat(' + JSON.stringify(formatData) + ');'
 		);
 	});
 
 	grunt.registerTask('package:header', function() {
-		grunt.file.copy('build/header.html', 'dist/Twine1/' + pkg.name + '/header.html');
+		grunt.file.copy('build/header.html', 'dist/Twine1/header.html');
 	});
 
-	grunt.registerTask('package', ['build:release', 'package:stylesheet', 'package:icon', 'package:format', 'package:header']);
+	grunt.registerTask('package', ['build:release', 'package:support', 'package:icon', 'package:format', 'package:header']);
 };

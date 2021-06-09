@@ -1,0 +1,21 @@
+# pandoc defaults file for html output, corresponding to the command line: 
+#     pandoc -o result.html my-story.md --toc-depth=1 --standalone --self-contained --css=prepub.css
+
+from: markdown
+to: html
+output-file: result.html
+
+# This is the default.
+table-of-contents: false
+
+toc-depth: 1
+
+# pandoc defaults to file fragments, so you have to specify this in order to include the CSS as a link or data.
+standalone: true
+
+# This embeds the CSS as a data url.  Switch to false to serve the css as a separate file
+self-contained: true
+
+# The prepub css file is needed for some options, and harmless otherwise.
+css:
+- ${.}/prepub.css
