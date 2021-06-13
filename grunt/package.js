@@ -3,6 +3,7 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('package:support', function() {
 		grunt.file.copy('src/prepub.css', 'dist/extras/prepub.css');
+		grunt.file.copy('src/prepub-para.css', 'dist/extras/prepub-para.css');
 		grunt.file.copy('src/epub.yaml', 'dist/extras/epub.yaml');
 		grunt.file.copy('src/html.yaml', 'dist/extras/html.yaml');
 		grunt.file.copy('src/pdf.yaml', 'dist/extras/pdf.yaml');

@@ -19,5 +19,15 @@ em em, em em em em { font-style: normal; }
 /* These are hidden (but retained) in some of the passage numbering options to allow navigation. */
 .prepub_hidden h2, h2.prepub_hidden { position: absolute; visibility: hidden; }
 
-/* This is an attempt to make 2-page layouts work better, but they still look funny.  Remove for continuous paragraphs. */
-.level2 { page-break-before: left; } 
+/* General breaking fixes */
+h1, h2, h3 { page-break-after: avoid; break-after: avoid-page; }
+
+ul { page-break-inside: avoid; break-inside: avoid-page; }
+
+p { widows: 2; orphans: 2; }
+
+/* This is an attempt to make 2-page layouts work better, but they still look funny.  
+   Remove for continuous paragraphs if necessary.  */
+.level2 { break-before: left; }
+
+.level2, header { padding-bottom: 3em; } 
