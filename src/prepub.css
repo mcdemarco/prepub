@@ -31,3 +31,5 @@ p { widows: 2; orphans: 2; }
 .level2 { break-before: left; }
 
 .level2, header { padding-bottom: 3em; } 
+
+body { padding-bottom: 80%; }
