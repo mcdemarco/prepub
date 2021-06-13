@@ -94,7 +94,7 @@ window.onload = function() {
 				
 				if (el.querySelector(selectorColophon)) {
 					var coloContent = el.querySelector(selectorColophon).textContent + "\n\n[Restart][" + startPassageTitle + "]\n\n";
-					buffer.push(this.buildPassage({name: "Colophon", content: coloContent},numbering));
+					buffer.push(this.buildPassage({name: "Colophon", content: coloContent},numbering, "Colophon"));
 				}
 
 				return buffer.join('');
@@ -119,17 +119,16 @@ window.onload = function() {
 			buildPassage: function(passageObj, numbering, number) {
 				var result = [];
 
-				result.push("## ", passageObj.name, " {.unnumbered");
+				result.push("## ", passageObj.name);
 				if (numbering != "names")
-					 result.push(" .prepub_hidden"); 
-				result.push("}");
-
+					 result.push(" {.prepub_hidden}"); 
+	
 				if (numbering == "numbers")
-					result.push("\n### ", number, " {.unnumbered}");
+					result.push("\n### ", number);
 				else if (numbering == "symbol")
-					result.push("\n### ", document.querySelector("#symbolInput").value, " {.unnumbered}");
+					result.push("\n### ", document.querySelector("#symbolInput").value);
 				else if (numbering == "image")
-					result.push("\n### ", "![divider image](" + document.querySelector("#symbolInput").value + ")", " {.unnumbered}");
+					result.push("\n### ", "![divider image](" + document.querySelector("#symbolInput").value + ")");
 
 				result.push("\n\n", this.scrub(passageObj.content), "\n\n");
 				
