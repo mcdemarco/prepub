@@ -1,5 +1,5 @@
 # pandoc defaults file for html output, corresponding to the command line: 
-#     pandoc -o result.html my-story.md --toc-depth=1 --standalone --self-contained --css=prepub.css
+#     pandoc -o result.html prepub123456789.md --toc-depth=1 --section-divs --standalone --self-contained --css=prepub.css
 
 from: markdown
 to: html
@@ -9,6 +9,7 @@ output-file: result.html
 table-of-contents: false
 
 toc-depth: 1
+section-divs: true
 
 # pandoc defaults to file fragments, so you have to specify this in order to include the CSS as a link or data.
 standalone: true

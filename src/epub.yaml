@@ -1,5 +1,5 @@
 # pandoc defaults file for epub output, corresponding to the command line: 
-#     pandoc -o result.epub my-story.md --epub-chapter-level=2 --toc-depth=1 --css=prepub.css
+#     pandoc -o result.epub prepub123456789.md --epub-chapter-level=2 --toc-depth=1 --css=prepub.css
 
 from: markdown
 to: epub
