@@ -1,0 +1,19 @@
+# pandoc defaults file for pdf output, corresponding to the command line: 
+#     pandoc -o result.pdf prepub123456789.md --pdf-engine=weasyprint --toc-depth=1 --section-divs --css=prepub.css
+
+from: markdown
+to: pdf
+output-file: result.pdf
+
+# You need to use an HTML-to-PDF engine in order to access the CSS that removes chapter headers or turns them into gamebook-style paragraph numbers.
+pdf-engine: weasyprint
+
+# This is the default.
+table-of-contents: false
+
+toc-depth: 1
+section-divs: true
+
+css:
+- ${.}/prepub.css
+- ${.}/prepub-para.css

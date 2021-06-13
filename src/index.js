@@ -19,11 +19,11 @@ window.onload = function() {
 				var el, twVersion, selectorAuthor, selectorCSS, selectorScript, 
 						selectorSubtitle, selectorPassages, passageTitleAttr, passageIdAttr, startPassageId;
 
-				var specialPassageList = ["StoryTitle", "StoryIncludes", "StoryColophon",
+				var specialPassageList = ["StoryTitle", "StoryIncludes", "StoryColophon", "StoryData",
 																	"StoryAuthor", "StorySubtitle", "StoryMenu", "StorySettings",
 																	"StoryBanner", "StoryCaption", "StoryInit", "StoryShare", 
 																	"PassageDone", "PassageFooter", "PassageHeader", "PassageReady",
-																	"MenuOptions", "MenuShare"];
+																	"MenuOptions", "MenuShare", "DotGraphSettings"];
 
 				if (document.getElementsByTagName('tw-storydata').length > 0) {
 					el = document.querySelector('tw-storydata');
@@ -94,7 +94,7 @@ window.onload = function() {
 				
 				if (el.querySelector(selectorColophon)) {
 					var coloContent = el.querySelector(selectorColophon).textContent + "\n\n[Restart][" + startPassageTitle + "]\n\n";
-					buffer.push(this.buildPassage({name: "Colophon", content: coloContent},numbering));
+					buffer.push(this.buildPassage({name: "Colophon", content: coloContent},numbering, "Colophon"));
 				}
 
 				return buffer.join('');
@@ -105,32 +105,30 @@ window.onload = function() {
 				var selector = twVersion == 2 ? 'tw-passagedata[name=Story' : 'div[tiddler=Story';
 
 				var title = twVersion == 2 ? el.getAttribute('name') : (el.querySelector(selector + "Title]") ? el.querySelector(selector + "Title]").textContent : "Untitled Story");
-
 				var subtitle = el.querySelector(selector + "Subtitle]") ? el.querySelector(selector + "Subtitle]").innerHTML : "";
 				var author = el.querySelector(selector + "Author]") ? el.querySelector(selector + "Author]").textContent: "";
-
-				var colophonLink = el.querySelector(selector + "Colophon]") ? '[Colophon]\n\n' : "";
+				//Should replace this with a configurable preface section.
+				var colophonLink = ""; //el.querySelector(selector + "Colophon]") ? '[Colophon]\n\n' : "";
 				
-				var titlePage = (subtitle ? "*" + subtitle + "* \n\n" : "") + /*'[' + startPassageTitle + ']\n\n' + */ colophonLink;
+				var yaml = this.buildYaml(title,subtitle,author);
 
-				return this.buildTitle(title,author,titlePage);
+				return yaml + this.scrub(colophonLink) + "\n\n";
 			},
 
 
 			buildPassage: function(passageObj, numbering, number) {
 				var result = [];
 
-				result.push("## ", passageObj.name, " {.unnumbered");
+				result.push("## ", passageObj.name);
 				if (numbering != "names")
-					 result.push(" .prepub_hidden"); 
-				result.push("}");
-
+					 result.push(" {.prepub_hidden}"); 
+	
 				if (numbering == "numbers")
-					result.push("\n### ", number, " {.unnumbered}");
+					result.push("\n### ", number);
 				else if (numbering == "symbol")
-					result.push("\n### ", document.querySelector("#symbolInput").value, " {.unnumbered}");
+					result.push("\n### ", document.querySelector("#symbolInput").value);
 				else if (numbering == "image")
-					result.push("\n### ", "![divider image](" + document.querySelector("#symbolInput").value + ")", " {.unnumbered}");
+					result.push("\n### ", "![divider image](" + document.querySelector("#symbolInput").value + ")");
 
 				result.push("\n\n", this.scrub(passageObj.content), "\n\n");
 				
@@ -138,21 +136,21 @@ window.onload = function() {
 			},
 
 
-			buildTitle: function(title, author, content) {
+			buildYaml: function(title, subtitle, author) {
 				var result = [];
 
 				//yaml header
 				result.push("---","\n");
-				result.push("title:","\n");
-				result.push("- type: main", "\n");
-				result.push("  text: ", title, "\n");
+				result.push("title: ", title, "\n");
 
-				if (author) {
-					result.push("creator:","\n");
-					result.push("- role: author", "\n");
-					result.push("  text: ", author, "\n");
+				if (subtitle) {
+					result.push("subtitle: ", subtitle, "\n");
 				}
-				result.push("---\n\n", this.scrub(content), "\n\n");
+				if (author) {
+					result.push("author: ", author, "\n");
+				}
+
+				result.push("---\n\n");
 				
 				return result.join('');
 			},

@@ -1,6 +1,8 @@
 var _ = require('underscore');
 
 module.exports = function(grunt) {
+	var pkg = require('../package.json');
+
 	grunt.config.merge({
 		browserify: {
 			default: {
@@ -42,6 +44,8 @@ module.exports = function(grunt) {
 		var data = {
 			name: '{{STORY_NAME}}',
 			passages: '{{STORY_DATA}}',
+			year: grunt.template.today('yyyy'),
+			version: pkg.version,
 			script: '<script>' + grunt.file.read('build/prepub.js') + '</script>'
 		};
 
@@ -54,6 +58,8 @@ module.exports = function(grunt) {
 		var data = {
 			name: 'Story',
 			passages: '<div id="storeArea" data-size="STORY_SIZE" hidden>"STORY"</div>',
+			year: grunt.template.today('yyyy'),
+			version: pkg.version,
 			script: '<script>' + grunt.file.read('build/prepub.js') + '</script>'
 		};
 
