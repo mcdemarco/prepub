@@ -107,7 +107,8 @@ window.onload = function() {
 				var title = twVersion == 2 ? el.getAttribute('name') : (el.querySelector(selector + "Title]") ? el.querySelector(selector + "Title]").textContent : "Untitled Story");
 				var subtitle = el.querySelector(selector + "Subtitle]") ? el.querySelector(selector + "Subtitle]").innerHTML : "";
 				var author = el.querySelector(selector + "Author]") ? el.querySelector(selector + "Author]").textContent: "";
-				var colophonLink = el.querySelector(selector + "Colophon]") ? '[Colophon]\n\n' : "";
+				//Should replace this with a configurable preface section.
+				var colophonLink = ""; //el.querySelector(selector + "Colophon]") ? '[Colophon]\n\n' : "";
 				
 				var yaml = this.buildYaml(title,subtitle,author);
 
