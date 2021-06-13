@@ -1,0 +1,4 @@
+/* This is the supplemental CSS needed to remove pagebreaks from the pdf output.
+   You can also just edit prepub.css as instructed there. */
+
+.level2 { break-before: initial; } 
