@@ -10,29 +10,29 @@ To add PrePub to Twine 2, use this URL (under Formats > Add a New Format): `http
 
 To add PrePub to Twine 1, create a new folder called `prepub` inside your targets folder, then download [this file](https://mcdemarco.net/tools/scree/prepub/header.html):
 `https://mcdemarco.net/tools/scree/prepub/header.html`
-and place it inside the new `prepub` folder.  See the [Twine cookbook](https://twinery.org/cookbook/twine1/terms/storyformats.html) for more information about installing and using story formats in Twine 1.
+and place it inside the new `prepub` folder.  See [the Twine cookbook](https://twinery.org/cookbook/twine1/terms/storyformats.html) for more information about installing and using story formats in Twine 1.
 
 You should also download [`prepub.css`](https://mcdemarco.net/tools/scree/prepub/prepub.css), especially if you intend to use paragraph numbering or other options, and optionally [`epub.yaml`](https://mcdemarco.net/tools/scree/prepub/epub.yaml), some convenient defaults for Pandoc.
 
 ## Use
 
-PrePub produces a Twine HTML file that, when opened in a browser, shows you the PrePub options and downloads a Markdown file named something like `prepub123456789.md`.
+PrePub produces a Twine HTML file that, when opened in a browser, shows you the PrePub options and downloads a Markdown file named something like `prepub123456789.md`.  To make this happen, do one of the following:
 
-In Twine 2, open your story, then click on the story menu arrow next to your story title (in the lower left hand corner of the UI) and select View Proofing Copy.
+In **Twine 2**, open your story, then click on the story menu arrow next to your story title (in the lower left hand corner of the UI) and select View Proofing Copy.
 
-In Twine 1, open or create a story (under the File menu).  Then, in the Story menu under Story Formats, select PrePub as the story format.  Choose Test Play.  (You may need to restart Twine 1 if you installed PrePub while it was running.)
+In **Twine 1**, open or create a story (under the File menu).  Then, in the Story menu under Story Formats, select PrePub as the story format.  Choose Test Play.  (You may need to restart Twine 1 if you installed PrePub while it was running.)  If you Publish or Build to a file instead, you will need to manually open the resulting HTML file in a browser.
 
-You can also use [TweeGo](http://www.motoslave.net/tweego/) with PrePub.  Install the PrePub story format according to [the documenatation](http://www.motoslave.net/tweego/docs/#getting-started-story-formats).  With TweeGo, or if you Publish or Build to a file in Twine 1, you will need to open the resulting HTML file in a browser in order to generate the desired Markdown output.
+In [TweeGo](http://www.motoslave.net/tweego/) or another external Twine compiler, install the PrePub story format and compile your story according to [the compiler's documenatation](http://www.motoslave.net/tweego/docs/#getting-started-story-formats).  You will need to open the resulting HTML file in a browser in order to generate the desired Markdown output.
 
 ### Details
 
-PrePub converts wiki-style links in your story to [implicit header references](https://pandoc.org/MANUAL.html#extension-implicit_header_references) (part of Pandoc's Markdown extensions).  It moves your start passage to the start of the file, if it isn't there already, your colophon (*i.e.*, any passage titled StoryColophon) to the end, and removes common special passages.  Otherwise, it leaves the passages of your story in place and in order, unless you choose to shuffle them.
+PrePub converts wiki-style links in your story to [implicit header references](https://pandoc.org/MANUAL.html#extension-implicit_header_references) (part of Pandoc's Markdown extensions) in the Markdown output.  It moves your start passage to the start of the file, if it isn't there already, and your colophon (*i.e.*, any passage titled StoryColophon) to the end.  It removes common special passages but otherwise leaves the passages of your story in place and in order, unless you choose to shuffle them.
 
-Markdown styling is preserved and understood by Pandoc.  Old-style wiki formatting (which is optional in Harlowe and expected in SugarCube) will be left in place by PrePub so you can alter it in the Markdown file before compiling to EPUB (using a good text editor).  HTML may or may not be preserved.
+Markdown styling is preserved by PrePub and understood by Pandoc.  Old-style wiki formatting (which is optional in Harlowe and expected in SugarCube) will be left in place by PrePub so you can alter it in the Markdown file (using a good text editor) before compiling to EPUB.  HTML may or may not be preserved through the conversion process.
 
 ### Options
 
-After downloading the default Markdown file, the PrePub GUI remains open.  To select a different passage numbering option, choose the appropriate radio button, then click `Regenerate` to get a new Markdown file.
+After downloading the Markdown file, the PrePub GUI remains open.  To select different options, choose the appropriate radio button and/or checkbox, then click `Regenerate` to get a new Markdown file.
 
 For passage headers, the options include: no passage headers at all, the passage name (the default), sequential numbering, a single character divider, or an image divider.
 
@@ -44,7 +44,7 @@ It does not parse your StoryData for an alternate start passage title.  It does 
 
 Other Pandoc output formats such as HTML and PDF may require supporting programs to produce the desired output.
 
-While EPUB nominally supports JavaScript coding, this support is optional and thus not available in all EPUB readers.  For the moment, PrePub ignores any JavaScript.
+While EPUB nominally supports JavaScript coding, this support is optional and thus not available in all EPUB readers.  PrePub ignores any JavaScript or macros.
 
 ## Making an EPUB
 
@@ -52,13 +52,13 @@ You should use a post-processor like [Pandoc](http://pandoc.org) to turn PrePub'
 
 	pandoc -o my-story.epub prepub123456789.md --epub-chapter-level=2 --toc-depth=1 --css=prepub.css
 
-You will need the `prepub.css` file mentioned above in order to remove chapter headers or turn them into gamebook-style paragraph numbers.  (You should be able to find it wherever you got PrePub itself.)  Feel free to add additional styles to the file.
+You will need the `prepub.css` file mentioned above in order to remove chapter headers or turn them into gamebook-style paragraph numbers.  Feel free to add additional styles to the file.
 
-Pandoc supports defaults files, and several have been provided (*e.g.*, [`epub.yaml`](https://mcdemarco.net/tools/scree/prepub/epub.yaml)) so you don't need to type out all the Pandoc options.  You can pass a defaults file on the command line like this:
+Pandoc supports defaults files, and several have been provided (*e.g.*, [`epub.yaml`](https://mcdemarco.net/tools/scree/prepub/epub.yaml)) so you don't need to type out all the recommended Pandoc options.  You can pass a defaults file on the command line like this:
 
 	pandoc -d epub.yaml prepub123456789.md 
 
-(The `yaml` extension is optional.)  The defaults will save the EPUB with the name `result.epub`; you can change the file name inside `epub.yaml`, or you can pass a different output file name on the command line with `-o` (as in the first example).
+The `yaml` extension is optional.  The defaults include saving the EPUB with the name `result.epub`; you can change the output file name inside `epub.yaml`, or you can pass a different output file name on the command line with `-o` (as in the first example).
 
 Note that `--epub-stylesheet` has become `--css` in newer versions of Pandoc, and defaults files are only available in newer versions.  It's also possible to pass Pandoc multiple CSS stylesheets (and defaults files) if you like.
 
@@ -66,23 +66,26 @@ Note that `--epub-stylesheet` has become `--css` in newer versions of Pandoc, an
 
 Most changes can be made in the stylesheet; you can make the passage headers/numbers/characters/images bigger or smaller there, as well as centering or coloring them as desired.
 
-If you're going for a continuous paragraph style like in old gamebooks, change `--epub-chapter-level=2` to `--epub-chapter-level=1` (or edit it in `epub.yaml`) and remove the line in `prepub.css` that handles 2-page layouts.  Note that the links may not work well in an ebook reader, though they should work in a PDF set to continuous scroll.
+If you're going for a continuous paragraph style like in old gamebooks, change `--epub-chapter-level=2` to `--epub-chapter-level=1` (or edit it in `epub.yaml`) and remove the line in `prepub.css` that handles 2-page layouts.  Note that such links may not work well in an ebook reader, though they should work in a PDF set to continuous scroll.
 
 [Kent Bye](https://puppet.com/blog/how-we-automated-our-ebook-builds-pandoc-and-kindlegen) lists more flags to set to spiff up your output:
 
 	pandoc -o my-story.epub title.txt prepub123456789.md --epub-cover-image=cover.jpg --epub-metadata=metadata.xml --toc-depth=1 --css=prepub.css --css=mySpiffyStyles.css
 
-For help adding more arguments to the Pandoc defaults file, see [the Pandoc users guide](https://pandoc.org/MANUAL.html#default-files).  For more about producing EPUBs, see Pandoc's [Making an ebook](https://pandoc.org/epub.html) documentation.
+For help adding more arguments to the Pandoc defaults file, see [the Pandoc User's Guide](https://pandoc.org/MANUAL.html#default-files).  For more about producing EPUBs, see Pandoc's [Making an ebook](https://pandoc.org/epub.html) documentation.  For styling hints see [Blitz ebook Tricks](https://friendsofepub.github.io/eBookTricks/).
 
 ## Making other formats
 
 You can convert your EPUB directly to Kindle using [KindleGen](https://www.amazon.com/gp/feature.html?docId=1000765211) or the [Kindle Previewer](http://www.amazon.com/kindleformat/kindlepreviewer).  (Although Amazon now prefers EPUB to mobi, there is still Amazon-specific formatting to consider; another option for that is [Vellum](https://vellum.pub).)
 
-Defaults files for producing HTML or PDF output with PrePub are also available.  See the comments in [`html.yaml`](https://mcdemarco.net/tools/scree/prepub/html.yaml) and [`pdf.yaml`](https://mcdemarco.net/tools/scree/prepub/pdf.yaml) for the corresponding command line invocation if you need it.
+Defaults files for producing HTML or PDF output with PrePub are also available.  See the comments in [`html.yaml`](https://mcdemarco.net/tools/scree/prepub/html.yaml) and [`pdf.yaml`](https://mcdemarco.net/tools/scree/prepub/pdf.yaml) for the corresponding command line invocation if you need it.  Note that Pandoc may require the installation of additional (usually open source) software for some output formats.
 
 ### Examples
 
-The Scree test story is available formatted as markdown using PrePub ([test-prepub.md](//mcdemarco.net/tools/scree/test-prepub.md)), and as transformed by Pandoc:  [test-prepub.epub](//mcdemarco.net/tools/scree/test-prepub.epub).
+The Scree test story is available formatted as markdown using PrePub ([test-prepub.md](//mcdemarco.net/tools/scree/test-prepub.md)), and as transformed by Pandoc:
+[test-prepub.epub](//mcdemarco.net/tools/scree/test-prepub.epub),
+[test-prepub.html](//mcdemarco.net/tools/scree/test-prepub.html), and 
+[test-prepub.pdf](//mcdemarco.net/tools/scree/test-prepub.pdf).
 
 ## Versions
 
@@ -111,4 +114,4 @@ Run `npm install` to install dependencies.  Run `grunt package` to create releas
 
 PrePub no longer writes out DOS line endings; you can reintroduce these with Pandoc if you need them.
 
-PrePub was inspired by [enscree](http://www.mcdemarco.net/tools/scree/enscree/), which was based on [entwee](http://www.mcdemarco.net/tools/entwee/), which was based on [entweedle](http://www.maximumverbosity.net/twine/Entweedle/), but now has a UI more like [DotGraph]((http://www.mcdemarco.net/tools/scree/dotgraph/)'s.
+PrePub was inspired by [enscree](http://www.mcdemarco.net/tools/scree/enscree/), which was based on [entwee](http://www.mcdemarco.net/tools/entwee/), which was based on [entweedle](http://www.maximumverbosity.net/twine/Entweedle/), but now has a UI more like [DotGraph](http://www.mcdemarco.net/tools/scree/dotgraph/)'s.
