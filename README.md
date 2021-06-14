@@ -40,11 +40,15 @@ There is also an option to shuffle passages; otherwise the passages appear in th
 
 ### What it doesn't do but should (the to-do list)
 
-It does not parse your StoryData for an alternate start passage title.  It does not handle wiki formatting.  It does not rewrite your links to use paragraph numbers (shuffled or not).  It does not handle multiple authors, or other locations for the author besides a StoryAuthor passage.
+While EPUB nominally supports JavaScript coding, this support is optional and thus not available in all EPUB readers.  PrePub ignores any JavaScript or macros.  In addition:
 
-Other Pandoc output formats such as HTML and PDF may require supporting programs to produce the desired output.
-
-While EPUB nominally supports JavaScript coding, this support is optional and thus not available in all EPUB readers.  PrePub ignores any JavaScript or macros.
+* It does not parse your StoryData or other locations for an alternate start passage title.
+* It does not handle multiple authors, or check other locations than StoryAuthor for the author.
+* It does not handle wiki formatting.
+* It does not rewrite your links to use its paragraph numbers (shuffled or not).
+* It doesn't have a preface option, and the colophon option could use a tag approach (instead of or in addition to special passaging).
+* It would be nice to respect some of the special passages and tags introduced in Gordian Book.
+* It would be possible to honor include/display/print-style macros.
 
 ## Making an EPUB
 
@@ -79,6 +83,8 @@ For help adding more arguments to the Pandoc defaults file, see [the Pandoc User
 You can convert your EPUB directly to Kindle using [KindleGen](https://www.amazon.com/gp/feature.html?docId=1000765211) or the [Kindle Previewer](http://www.amazon.com/kindleformat/kindlepreviewer).  (Although Amazon now prefers EPUB to mobi, there is still Amazon-specific formatting to consider; another option for that is [Vellum](https://vellum.pub).)
 
 Defaults files for producing HTML or PDF output with PrePub are also available.  See the comments in [`html.yaml`](https://mcdemarco.net/tools/scree/prepub/html.yaml) and [`pdf.yaml`](https://mcdemarco.net/tools/scree/prepub/pdf.yaml) for the corresponding command line invocation if you need it.  Note that Pandoc may require the installation of additional (usually open source) software for some output formats.
+
+Some Pandoc output formats such as PDF may require supporting programs to produce the desired output.
 
 ### Examples
 
