@@ -9,10 +9,19 @@ window.onload = function() {
 				var blob = new Blob([output], {type: "text/markdown;charset=utf-8"});
 				saveAs(blob, "prepub" + Date.now() + ".md");
 			},
+	
+			detwiddle: function() {
+				var disable = !(document.getElementById("tw2md")).checked;
 
-			
+				var radios = document.querySelectorAll("[name=source]");
+				radios.forEach(function(currentElt) {
+					currentElt.disabled = disable;
+				});
+			},
+	
 			export: function() {
 				var buffer = [];
+				var tw2md = document.getElementById("tw2md").checked;
 
 				//Find the story and infer the Twine version.
 
@@ -197,6 +206,21 @@ window.onload = function() {
 					content = content.replace(/\\>/gm, "&gt;");
 					content = content.replace(/\\n\\n/gm, "\n\n");
 					content = this.markdownLinks(content);
+/*
+					if (tw2md) {
+						//tiddlymiki styles to pandoc markdown.  
+						//Simple common ones:
+						content = content.replace(/\/\//gm, "*"); //italic
+						content = content.replace(/''/gm, "**"); //bold
+						content = content.replace(/\^\^/gm, "^"); //superscripts
+						//Simple sugarcube and twine 1 conversions:
+						content = content.replace(/({{{)|(}}})/gm, "`"); //preformatting (sugarcube & Twine 1)
+						//Complicated conversions:
+						content = content.replace(/~~(\S*)~~/gm, "~$1~"); //subscript (harlowe and markdown have no official subscripting but this works in pandoc in restricted situations
+						content = content.replace(/==/gm, "~~"); //strikethrough (in sugarcube; harlome is correct)
+						content = content.replace(/__(\S*)__/gm, "<span class=\"underline\">$1</span>"); //underline to pandoc (in sugarcube and Twine 1; elsewhere this is alternate emphasis and should be left alone)
+					}
+*/
 				}
 				return content;
 			}
@@ -204,5 +228,5 @@ window.onload = function() {
 		};			
 	}
 	
-	window.PrePub.convert();
+	window.PrePub.detwiddle();
 };

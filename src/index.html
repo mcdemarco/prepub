@@ -34,8 +34,11 @@
 		</script>
 <%= script %>
 		<style>
-		 .info {font-style:italic; color: #b5b5b5;}
-		 table {caption-side:bottom;}
+		 .info, caption {font-style:italic;}
+		 .info {color: #a5a5a5;}
+		 .indent {padding-left: 1.5em;}
+		 p, table {padding-left: 3em;}
+		 table {caption-side:top; color:#333;}
 		 th, td {border: 1px solid #dedede; padding: 3px; text-align:center; font-weight:normal;}
 		 td {font-size: x-large;}
 		</style>
@@ -44,49 +47,77 @@
 	<body>
 		<h1>PrePub Conversion of {{STORY_NAME}}</h1>
 
+		<h3>Headers</h3>
+
+		<p>Certain options may require the PrePub stylesheet.  You can also change centering, size, and capitalization of the headers there.</p>
+
 		<p>
 			<input type="radio" id="nothing" name="numbering" value="nothing" />
-			<label for="nothing">Hide passage names</label>
+			<label for="nothing">None </label>
 			&nbsp;
 			<span class="info"> There will be no header at all on passages.</span>
 			<br/>
 			<input type="radio" id="names" name="numbering" value="names" checked />
-			<label for="names">Use passage names for headers</label><br/>
+			<label for="names">Passage names</label>
+			&nbsp;
+			<span class="info"> Passage names will not be altered (<em>e.g.</em>, to upper case).</span>  
+			<br/>
 			<input type="radio" id="numbers" name="numbering" value="numbers" />
-			<label for="numbers">Use paragraph numbers </label>
+			<label for="numbers">Paragraph numbers </label>
 			&nbsp;
 			<span class="info"> Paragraph numbers are arbitrary (though sequential) and are not inserted into links.</span>  
 			<br/>
 			<input type="radio" id="symbol" name="numbering" value="symbol" />
-			<label for="symbol">Use a character divider </label>
+			<label for="symbol">A character divider </label>
 			&nbsp;
-			<span class="info"> Use a numeric entity reference (<i>e.g.,</i> &amp;#167;) instead of the named reference (&amp;sect;).</span>
+			<span class="info"> Use a numeric entity reference (<i>e.g.,</i> &amp;#167;), not a named reference (&amp;sect;).</span>
 			<br/>
 			<input type="radio" id="image" name="numbering" value="image" />
-			<label for="image">Use an image divider </label>
+			<label for="image">An image divider </label>
 			&nbsp;
 			<span class="info"> Provide a path relative to the directory you will be running pandoc in.</span>
 			<br/>
-			<label for="symbolInput">Divider/Image: </label> 
+			<label for="symbolInput" class="indent">Divider entity or path: </label> 
 			<input type="text" id="symbolInput" name="symbolInput" placeholder="&amp;#167;" value="" />
-			<br/>
+
+			<table>
+				<caption>Sample character entities; see <a href="https://dev.w3.org/html5/html-author/charref" target="_blank">this page</a> for more.</caption>
+				<tr><th>&amp;#42;</th><th>&amp;#167;</th><th>&amp;#182;</th><th>&amp;#183;</th><th>&amp;#8224;</th><th>&amp;#8225;</th><th>&amp;#8226;</th><th>&amp;#8727;</th><th>&amp;#8982;</th><th>&amp;#10535;</th><th>&amp;#10803;</th></tr>
+				<tr><td>&#42;</td><td>&#167;</td><td>&#182;</td><td>&#183;</td><td>&#8224;</td><td>&#8225;</td><td>&#8226;</td><td>&#8727;</td><td>&#8982;</td><td>&#10535;</td><td>&#10803;</td></tr>
+			</table>
+		</p>
+
+
+		<h3>Options</h3>
+		<p>
 			<input type="checkbox" id="shuffle" name="shuffle" value="1" />
 			<label for="shuffle">Shuffle passages </label>
 			&nbsp;
 			<span class="info"> The start passage will remain at the beginning.</span>
+		</p>
+		<p>
+			<input type="checkbox" id="tw2md" name="tw2md" onclick="PrePub.detwiddle();" />
+			<label for="tw2md">Convert wiki-style markup to markdown from: </label>
+			&nbsp;
+			<input type="radio" name="source" id="harlowe" value="harlowe" checked/>
+			<label for="harlowe">Harlowe </label>
+			&nbsp;
+			<input type="radio" name="source" id="sugarcube" value="sugarcube" />
+			<label for="sugarcube">Sugarcube </label>
+			&nbsp;
+			<input type="radio" name="source" id="twine1" value="twine1" />
+			<label for="twine1">Twine 1 </label>
 			<br/>
-			<button type="button" onclick="PrePub.convert();">Regenerate</button>
+			<span class="info indent">This should only be necessary if you didn't use a Markdown-based story format like Chapbook or Snowman.</span>
+			<br/>
+			<span class="info indent">It does not convert macros or other scripting.</span>
 		</p>
 
-		<p>Certain options may require the included stylesheet.  You can also change centering and size of the headers/numbers/characters there.</p>
-
+		<h3>Download</h3>
+		<p>
+			<button type="button" onclick="PrePub.convert();">Download</button>
+		</p>
 		<p>See the PrePub README or <a href="http://mcdemarco.net/tools/scree/prepub/" target="_blank">web page</a> for help converting the downloaded file to ePub using Pandoc and PrePub's stylesheet.</p>
-
-		<table>
-			<tr><th>&amp;#42;</th><th>&amp;#167;</th><th>&amp;#182;</th><th>&amp;#183;</th><th>&amp;#8224;</th><th>&amp;#8225;</th><th>&amp;#8226;</th><th>&amp;#8727;</th><th>&amp;#8982;</th><th>&amp;#10535;</th><th>&amp;#10803;</th></tr>
-			<tr><td>&#42;</td><td>&#167;</td><td>&#182;</td><td>&#183;</td><td>&#8224;</td><td>&#8225;</td><td>&#8226;</td><td>&#8727;</td><td>&#8982;</td><td>&#10535;</td><td>&#10803;</td></tr>
-			<caption>Sample character entities; see <a href="https://dev.w3.org/html5/html-author/charref" target="_blank">this page</a> for more.</caption>
-		</table>
 
 		<pre id="output">
 		

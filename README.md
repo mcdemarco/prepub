@@ -42,12 +42,14 @@ There is also an option to shuffle passages; otherwise the passages appear in th
 
 While EPUB nominally supports JavaScript coding, this support is optional and thus not available in all EPUB readers.  PrePub ignores any JavaScript or macros.  In addition:
 
-* It does not parse your StoryData or other locations for an alternate start passage title.
+* It does not parse your StoryData or other locations for an alternate start passage title.  (This shouldn't be necessary, but test with Tweego.)
 * It does not handle multiple authors, or check other locations than StoryAuthor for the author.
 * It does not handle wiki formatting.
-* It does not rewrite your links to use its paragraph numbers (shuffled or not).
+* It does not rewrite your links to use its paragraph numbers (shuffled or not) a la [WritingFantasy](https://sophiehoulden.com/twine/writingfantasy_guide.html).
+* It does not warn you about duplicate implicit header references.
 * It doesn't have a preface option, and the colophon option could use a tag approach (instead of or in addition to special passaging).
-* It would be nice to respect some of the special passages and tags introduced in Gordian Book.
+* It would be nice to respect some of the special passages and tags introduced in [Gordian Book](https://gordianbook.art)/[WritingFantasy](https://sophiehoulden.com/twine/writingfantasy_guide.html).
+* It would be nice to sub-shuffle and fix intermediate passages as in [pangamebook](https://github.com/lifelike/pangamebook).
 * It would be possible to honor include/display/print-style macros.
 
 ## Making an EPUB
