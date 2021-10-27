@@ -16,13 +16,14 @@ You should also download [`prepub.css`](https://mcdemarco.net/tools/scree/prepub
 
 ## Use
 
-PrePub produces a Twine HTML file that, when opened in a browser, shows you the PrePub options and downloads a Markdown file named something like `prepub123456789.md`.  To make this happen, do one of the following:
+PrePub produces a Twine HTML file that, when opened in a browser, shows you the PrePub options and lets you download its Pandoc Markdown output.  To make this happen, do one of the following:
 
-In **Twine 2**, open your story, then click on the story menu arrow next to your story title (in the lower left hand corner of the UI) and select View Proofing Copy.
+* In **Twine 2**, open your story, then click on the story menu arrow next to your story title (in the lower left hand corner of the UI) and select View Proofing Copy.
+* In **Twine 1**, open or create a story (under the File menu).  Then, in the Story menu under Story Formats, select PrePub as the story format.  Choose Test Play.  (You may need to restart Twine 1 if you installed PrePub while it was running.)  If you Publish or Build to a file instead, you will need to manually open the resulting HTML file in a browser.
+* In [TweeGo](http://www.motoslave.net/tweego/) or another external Twine compiler, install the PrePub story format and compile your story according to [the compiler's documenatation](http://www.motoslave.net/tweego/docs/#getting-started-story-formats).  You will need to open the resulting HTML file in a browser.
 
-In **Twine 1**, open or create a story (under the File menu).  Then, in the Story menu under Story Formats, select PrePub as the story format.  Choose Test Play.  (You may need to restart Twine 1 if you installed PrePub while it was running.)  If you Publish or Build to a file instead, you will need to manually open the resulting HTML file in a browser.
-
-In [TweeGo](http://www.motoslave.net/tweego/) or another external Twine compiler, install the PrePub story format and compile your story according to [the compiler's documenatation](http://www.motoslave.net/tweego/docs/#getting-started-story-formats).  You will need to open the resulting HTML file in a browser in order to generate the desired Markdown output.
+Once you have opened the proofing copy or HTML file, you can select your options and click the download button.
+This downloads a Markdown file named something like `prepub123456789.md`.
 
 ### Details
 
@@ -32,11 +33,13 @@ Markdown styling is preserved by PrePub and understood by Pandoc.  Old-style wik
 
 ### Options
 
-After downloading the Markdown file, the PrePub GUI remains open.  To select different options, choose the appropriate radio button and/or checkbox, then click `Regenerate` to get a new Markdown file.
+After downloading the Markdown file, the PrePub GUI remains open.  To select different options, choose the appropriate radio button and/or checkbox, then click `Download` to get a new Markdown file with a slightly different name.
 
 For passage headers, the options include: no passage headers at all, the passage name (the default), sequential numbering, a single character divider, or an image divider.
 
-There is also an option to shuffle passages; otherwise the passages appear in the same order in the text as in the source file.
+There is an option to shuffle passages; otherwise the passages appear in the same order in the text as in the source file.
+
+There is an option to convert wiki-style markup (as used in non-markdown-based story formats) to Markdown.  You will need to choose the particular story format you used.  If it partially supported Markdown, that Markdown will be preserved.
 
 ### What it doesn't do but should (the to-do list)
 

@@ -47,9 +47,9 @@
 	<body>
 		<h1>PrePub Conversion of {{STORY_NAME}}</h1>
 
-		<h3>Headers</h3>
-
 		<p>Certain options may require the PrePub stylesheet.  You can also change centering, size, and capitalization of the headers there.</p>
+
+		<h3>Headers</h3>
 
 		<p>
 			<input type="radio" id="nothing" name="numbering" value="nothing" />
@@ -88,7 +88,7 @@
 		</p>
 
 
-		<h3>Options</h3>
+		<h3>Other Options</h3>
 		<p>
 			<input type="checkbox" id="shuffle" name="shuffle" value="1" />
 			<label for="shuffle">Shuffle passages </label>
@@ -96,7 +96,7 @@
 			<span class="info"> The start passage will remain at the beginning.</span>
 		</p>
 		<p>
-			<input type="checkbox" id="tw2md" name="tw2md" onclick="PrePub.detwiddle();" />
+			<input type="checkbox" id="tw2md" name="tw2md" onclick="PrePub.disenable();" />
 			<label for="tw2md">Convert wiki-style markup to markdown from: </label>
 			&nbsp;
 			<input type="radio" name="source" id="harlowe" value="harlowe" checked/>
@@ -107,8 +107,11 @@
 			&nbsp;
 			<input type="radio" name="source" id="twine1" value="twine1" />
 			<label for="twine1">Twine 1 </label>
+			&nbsp;
+			<input type="radio" name="source" id="chapbook" value="chapbook" />
+			<label for="chapbook">Chapbook </label>
 			<br/>
-			<span class="info indent">This should only be necessary if you didn't use a Markdown-based story format like Chapbook or Snowman.</span>
+			<span class="info indent">This should only be necessary if you didn't use a purely Markdown-based story format like Snowman.  (Chapbook uses some minor non-Markdown markup.)</span>
 			<br/>
 			<span class="info indent">It does not convert macros or other scripting.</span>
 		</p>

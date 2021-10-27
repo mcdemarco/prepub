@@ -10,7 +10,7 @@ window.onload = function() {
 				saveAs(blob, "prepub" + Date.now() + ".md");
 			},
 	
-			detwiddle: function() {
+			disenable: function() {
 				var disable = !(document.getElementById("tw2md")).checked;
 
 				var radios = document.querySelectorAll("[name=source]");
@@ -21,7 +21,6 @@ window.onload = function() {
 	
 			export: function() {
 				var buffer = [];
-				var tw2md = document.getElementById("tw2md").checked;
 
 				//Find the story and infer the Twine version.
 
@@ -108,7 +107,6 @@ window.onload = function() {
 
 				return buffer.join('');
 			},
-
 			
 			buildTitlePage: function(twVersion, el, startPassageTitle) {
 				var selector = twVersion == 2 ? 'tw-passagedata[name=Story' : 'div[tiddler=Story';
@@ -123,7 +121,6 @@ window.onload = function() {
 
 				return yaml + this.scrub(colophonLink) + "\n\n";
 			},
-
 
 			buildPassage: function(passageObj, numbering, number) {
 				var result = [];
@@ -201,32 +198,87 @@ window.onload = function() {
 			
 			scrub: function(content) {
 				if (content) {
+					var twSource;
+					if (document.getElementById("tw2md").checked)
+						twSource = document.querySelector("input[name=source]:checked") ? document.querySelector("input[name=source]:checked").value : "harlowe";
+
 					content = content.replace(/^##/gm, " ##");
 					content = content.replace(/\\</gm, "&lt;");
 					content = content.replace(/\\>/gm, "&gt;");
 					content = content.replace(/\\n\\n/gm, "\n\n");
 					content = this.markdownLinks(content);
-/*
-					if (tw2md) {
-						//tiddlymiki styles to pandoc markdown.  
-						//Simple common ones:
-						content = content.replace(/\/\//gm, "*"); //italic
-						content = content.replace(/''/gm, "**"); //bold
-						content = content.replace(/\^\^/gm, "^"); //superscripts
-						//Simple sugarcube and twine 1 conversions:
-						content = content.replace(/({{{)|(}}})/gm, "`"); //preformatting (sugarcube & Twine 1)
-						//Complicated conversions:
-						content = content.replace(/~~(\S*)~~/gm, "~$1~"); //subscript (harlowe and markdown have no official subscripting but this works in pandoc in restricted situations
-						content = content.replace(/==/gm, "~~"); //strikethrough (in sugarcube; harlome is correct)
-						content = content.replace(/__(\S*)__/gm, "<span class=\"underline\">$1</span>"); //underline to pandoc (in sugarcube and Twine 1; elsewhere this is alternate emphasis and should be left alone)
+					if (twSource) {
+						content = this.detwiddle(content, twSource);
 					}
-*/
 				}
+				return content;
+			},
+
+			detwiddle: function(content, twSource) {
+				//convert tiddlymiki styles and other abberations to pandoc markdown.
+				//there is adequate agreement that --- is a horizontal rule.
+
+				if (twSource != "chapbook") {
+					//Simple common tiddlywiki format.
+					content = content.replace(/\/\//gm, "*"); //italic
+					content = content.replace(/''/gm, "**"); //bold
+					content = content.replace(/\^\^/gm, "^"); //superscripts
+				} else {
+					//chapbook does one weird thing
+					content = content.replace(/~~([^~]+?)~~/gm, "<span class=\"smallcaps\">$1</span>"); //small caps to pandoc
+				}
+
+				if (twSource == "harlowe") {
+
+				}
+
+				if (twSource == "sugarcube" || twSource == "twine1") {
+						//harlowe and markdown have no official subscripting (and this symbol is for strikethrough)
+					content = content.replace(/~~([^~]+?)~~/gm, "~$1~"); //subscript to pandoc
+
+					content = content.replace(/==/gm, "~~"); //strikethrough
+
+					//harlowe and markdown have no official underline, but the output here works in pandoc in restricted situations
+				  //note in markdown/harlowe this is alternate emphasis and should be left alone
+					content = content.replace(/__([^_]+?)__/gm, "<span class=\"underline\">$1</span>"); //underline to pandoc
+
+					//ordered lists.
+					content = content.replace(/^# (\w)/gm, "1. $1");
+
+					//headers
+					content = content.replace(/^!!!!!!(\w)/gm, "###### $1");
+					content = content.replace(/^!!!!!(\w)/gm, "##### $1");
+					content = content.replace(/^!!!!(\w)/gm, "#### $1");
+					content = content.replace(/^!!!(\w)/gm, "### $1");
+					content = content.replace(/^!!(\w)/gm, "## $1");
+					content = content.replace(/^!(\w)/gm, "# $1");
+
+					//Comments to pandoc: 
+					//tw style /% ... %/
+					if (twSource == "sugarcube") {
+						// c-style /* ... */ 
+						// sugarcube and harlowe permit html-style comments, which can just be left in place.  Twine 1 probably didn't. (?)
+					}
+				}
+
+				//Escaping (TODO)
+				//sugarcube/twine 1: 
+				// content = content.replace(/({{{)|(}}})/gm, "`"); //preformatting
+				//sugarcube distinguishes between code block and verbatim mode, though it's not clear how exactly.  Reduce verbatim to code:
+				// content = content.replace(/(\"\"\")|(\"\"\")/gm, "```"); //verbatim
+				//harlowe does weird things with multiple backtick escape characters.  
+				// Might want to turn them into pandoc fenced code blocks rather than markdown.
+
+				//Could convert more complicated stuff that is generally listed as "styling".  E.g.,
+				// escaped line breaks.
+				// Harlowe is too forgiving about the structure of lists.
+
+				//sources: http://twinery.org/cookbook/twine1/terms/formatting.html
 				return content;
 			}
 
 		};			
 	}
 	
-	window.PrePub.detwiddle();
+	window.PrePub.disenable();
 };
