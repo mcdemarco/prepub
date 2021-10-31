@@ -3,13 +3,17 @@ window.onload = function() {
 
 		window.PrePub = {
 
-			convert: function() {
-				var output = this.export();
+			load: function() {
+				//Init function.
+				//Decide whether to just activate the UI or also parse settings and autorun.
 
-				var blob = new Blob([output], {type: "text/markdown;charset=utf-8"});
-				saveAs(blob, "prepub" + Date.now() + ".md");
+				if (window.location.search && window.location.search.split("?")[1].length > 0) {
+					this.useSettings(window.location.search.split("?")[1].split("&"));
+				} else
+					this.disenable();
+
 			},
-	
+
 			disenable: function() {
 				var disable = !(document.getElementById("tw2md")).checked;
 
@@ -17,6 +21,48 @@ window.onload = function() {
 				radios.forEach(function(currentElt) {
 					currentElt.disabled = disable;
 				});
+			},
+	
+			useSettings: function(settingsArray) {
+				//Parse settings and autodownload.
+				var setting;
+				for (l=0; l<settingsArray.length; l++) {
+					setting = settingsArray[l].split("=");
+					if (setting.length > 0) {
+						switch (setting[0]) {
+
+						case "numbering":
+							if (setting.length > 1) {
+								document.querySelector("#" + setting[1]).checked = true;
+							}
+							break;
+						case "symbolInput":
+							if (setting.length > 1) {
+								document.querySelector("#symbolInput").value = decodeURIComponent(setting[1]);
+							}
+							break;
+						case "shuffle":
+  						document.querySelector("#shuffle").checked = true;
+							break;
+						case "source":
+				  		if (setting.length > 1) {
+								document.querySelector("#tw2md").checked = true;
+								document.querySelector("#" + setting[1]).checked = true;
+							}
+							break;
+						}
+
+					}
+				}
+				//Autodownload.
+				this.convert();
+			},
+	
+			convert: function() {
+				var output = this.export();
+
+				var blob = new Blob([output], {type: "text/markdown;charset=utf-8"});
+				saveAs(blob, "prepub" + Date.now() + ".md");
 			},
 	
 			export: function() {
@@ -229,11 +275,12 @@ window.onload = function() {
 				}
 
 				if (twSource == "harlowe") {
-
+					//Harlowe permits, and even encourages, problematic headers, but pandoc seems to handle them.
+					content = content.replace(/^(\s)*(#{1,6})([^#].*)$/gm, "\n$2 $3\n\n");
 				}
 
 				if (twSource == "sugarcube" || twSource == "twine1") {
-						//harlowe and markdown have no official subscripting (and this symbol is for strikethrough)
+					//harlowe and markdown have no official subscripting (and this symbol is for strikethrough)
 					content = content.replace(/~~([^~]+?)~~/gm, "~$1~"); //subscript to pandoc
 
 					content = content.replace(/==/gm, "~~"); //strikethrough
@@ -254,11 +301,13 @@ window.onload = function() {
 					content = content.replace(/^!(\w)/gm, "# $1");
 
 					//Comments to pandoc: 
+					content = content.replace(/\/%(.*?)%\//gm, "<!--- $1 -->"); //comment to html comment
 					//tw style /% ... %/
 					if (twSource == "sugarcube") {
 						// c-style /* ... */ 
-						// sugarcube and harlowe permit html-style comments, which can just be left in place.  Twine 1 probably didn't. (?)
+						content = content.replace(/\/\*(.*?)\*\//gm, "<!--- $1 -->"); //comment to html comment
 					}
+					// sugarcube and harlowe permit html-style comments, which can just be left in place.  Twine 1 probably didn't?
 				}
 
 				//Escaping (TODO)
@@ -270,8 +319,8 @@ window.onload = function() {
 				// Might want to turn them into pandoc fenced code blocks rather than markdown.
 
 				//Could convert more complicated stuff that is generally listed as "styling".  E.g.,
-				// escaped line breaks.
-				// Harlowe is too forgiving about the structure of lists.
+				// Sugarcube escaped line breaks and line continuation
+				// Harlowe and twine 1 are too forgiving about the structure (spacing) of lists, and Harlowe sublists are funky (double-marked).
 
 				//sources: http://twinery.org/cookbook/twine1/terms/formatting.html
 				return content;
@@ -280,5 +329,5 @@ window.onload = function() {
 		};			
 	}
 	
-	window.PrePub.disenable();
+	window.PrePub.load();
 };
