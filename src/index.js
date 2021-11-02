@@ -319,7 +319,7 @@ window.onload = function() {
 				}
 
 				//Could convert more complicated stuff that is generally listed as "styling".  E.g.,
-				// Sugarcube escaped line breaks and line continuation
+				// Sugarcube escaped line breaks, line continuation, and custom styles (styles would require bracketed spans in pandoc)
 				// Harlowe and twine 1 are too forgiving about the structure (spacing) of lists, and Harlowe sublists are funky (double-marked).
 
 				//sources: http://twinery.org/cookbook/twine1/terms/formatting.html

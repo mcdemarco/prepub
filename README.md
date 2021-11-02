@@ -52,7 +52,7 @@ While EPUB nominally supports JavaScript coding, this support is optional and th
 * It does not warn you about duplicate implicit header references.
 * It doesn't have a preface option, and the colophon option could use a tag approach (instead of or in addition to special passaging).
 * It would be nice to respect some of the special passages and tags introduced in [Gordian Book](https://gordianbook.art)/[WritingFantasy](https://sophiehoulden.com/twine/writingfantasy_guide.html).
-* It would be nice to sub-shuffle and fix intermediate passages as in [pangamebook](https://github.com/lifelike/pangamebook).
+* It would be nice to sub-shuffle and anchor intermediate passages as in [pangamebook](https://github.com/lifelike/pangamebook).
 * It would be possible to honor include/display/print-style macros.
 
 ## Making an EPUB
@@ -75,7 +75,7 @@ Note that `--epub-stylesheet` has become `--css` in newer versions of Pandoc, an
 
 Most changes can be made in the stylesheet; you can make the passage headers/numbers/characters/images bigger or smaller there, as well as centering or coloring them as desired.
 
-If you're going for a continuous paragraph style like in old gamebooks, change `--epub-chapter-level=2` to `--epub-chapter-level=1` (or edit it in `epub.yaml`) and remove the line in `prepub.css` that handles 2-page layouts.  Note that such links may not work well in an ebook reader, though they should work in a PDF set to continuous scroll.
+If you're going for a continuous paragraph style like in old gamebooks, change `--epub-chapter-level=2` to `--epub-chapter-level=1` (or edit it in `epub.yaml`) and remove the line in `prepub.css` that handles 2-page layouts.  Note that such links may not work well in some ebook readers, though they should work in a PDF set to continuous scroll.
 
 [Kent Bye](https://puppet.com/blog/how-we-automated-our-ebook-builds-pandoc-and-kindlegen) lists more flags to set to spiff up your output:
 
@@ -102,7 +102,10 @@ The Scree test story is available formatted as markdown using PrePub ([test-prep
 
 There are a lot of little markup gotchas to using Markdown in general, and Pandoc markdown is no exception.
 
-* If you did not leave blank lines before blockquotes (including each nested blockquote), you mill need the `-f markdown-blank_before_blockquote` option.
+* If you did not leave blank lines before blockquotes (including each nested blockquote), you will need to use the `-f markdown-blank_before_blockquote` option.
+* If you do not want your HTML (or converted) comments to appear in the output as hidden HTML comments, you will need the `--strip-comments` option.
+* If you want to produce HTML without the provided defaults file ( [`html.yaml`](https://mcdemarco.net/tools/scree/prepub/html.yaml)), do not omit the flags included in the command line example in that file, and especially do not omit `--standalone`.
+* Because of the use of implicit header references in Pandoc, passage names that Twine accepts as distinct may become indistinguishable.  Make sure that no passage names are distinguished solely by punctuation or capitalization.
 
 ## Versions
 
