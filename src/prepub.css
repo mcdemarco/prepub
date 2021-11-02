@@ -3,7 +3,9 @@ body { margin: 5%; text-align: justify; font-size: medium; }
 code { font-family: monospace; }
 h1 { text-align: left; }
 h2 { text-align: left; } /* passage titles are h2's */
-h3 { text-align: center; } /* paragraph numbers and character dividers are h3's; you can change their size here */
+h3 { text-align: center; } /* paragraph numbers and dividers are h3's; you can change their size here if you don't have other h3's */
+h3.dividerCharacter { font-size: larger; } /* paragraph divider characters in particular */
+h3.dividerImage img { width: 66%; } /* paragraph divider images in particular */
 h4 { text-align: left; }
 h5 { text-align: left; }
 h6 { text-align: left; }

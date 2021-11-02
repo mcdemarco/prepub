@@ -178,9 +178,9 @@ window.onload = function() {
 				if (numbering == "numbers")
 					result.push("\n### ", number);
 				else if (numbering == "symbol")
-					result.push("\n### ", document.querySelector("#symbolInput").value);
+					result.push("\n### ", document.querySelector("#symbolInput").value, " {.dividerCharacter}");
 				else if (numbering == "image")
-					result.push("\n### ", "![divider image](" + document.querySelector("#symbolInput").value + ")");
+					result.push("\n### ", "![divider image](" + document.querySelector("#symbolInput").value + ") {.dividerImage}");
 
 				result.push("\n\n", this.scrub(passageObj.content), "\n\n");
 				
@@ -248,7 +248,7 @@ window.onload = function() {
 					if (document.getElementById("tw2md").checked)
 						twSource = document.querySelector("input[name=source]:checked") ? document.querySelector("input[name=source]:checked").value : "harlowe";
 
-					content = content.replace(/^##/gm, " ##");
+					//content = content.replace(/^ ##/gm, "##");  //(old code) Was there a concern about existing headers conflicting with generated headers?
 					content = content.replace(/\\</gm, "&lt;");
 					content = content.replace(/\\>/gm, "&gt;");
 					content = content.replace(/\\n\\n/gm, "\n\n");
@@ -275,7 +275,7 @@ window.onload = function() {
 				}
 
 				if (twSource == "harlowe") {
-					//Harlowe permits, and even encourages, problematic headers, but pandoc seems to handle them.
+					//Harlowe permits, and even encourages, problematic headers.
 					content = content.replace(/^(\s)*(#{1,6})([^#].*)$/gm, "\n$2 $3\n\n");
 				}
 
@@ -308,15 +308,15 @@ window.onload = function() {
 						content = content.replace(/\/\*(.*?)\*\//gm, "<!--- $1 -->"); //comment to html comment
 					}
 					// sugarcube and harlowe permit html-style comments, which can just be left in place.  Twine 1 probably didn't?
-				}
 
-				//Escaping (TODO)
-				//sugarcube/twine 1: 
-				// content = content.replace(/({{{)|(}}})/gm, "`"); //preformatting
-				//sugarcube distinguishes between code block and verbatim mode, though it's not clear how exactly.  Reduce verbatim to code:
-				// content = content.replace(/(\"\"\")|(\"\"\")/gm, "```"); //verbatim
-				//harlowe does weird things with multiple backtick escape characters.  
-				// Might want to turn them into pandoc fenced code blocks rather than markdown.
+					//Escaping (mostly TODO, but at least verbatim some of it)
+					//sugarcube/twine 1: 
+					content = content.replace(/({{{)|(}}})/gm, "```"); //preformatting
+					if (twSource == "sugarcube") {
+						//sugarcube distinguishes between code block and verbatim mode, though it's not clear how exactly.  Reduce verbatim to code:
+						content = content.replace(/\"\"\"/gm, "`"); //verbatim
+					}
+				}
 
 				//Could convert more complicated stuff that is generally listed as "styling".  E.g.,
 				// Sugarcube escaped line breaks and line continuation

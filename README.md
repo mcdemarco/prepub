@@ -39,7 +39,7 @@ For passage headers, the options include: no passage headers at all, the passage
 
 There is an option to shuffle passages; otherwise the passages appear in the same order in the text as in the source file.
 
-There is an option to convert wiki-style markup (as used in non-markdown-based story formats) to Markdown.  You will need to choose the particular story format you used.  If it partially supported Markdown, that Markdown will be preserved.
+There is an option to convert wiki-style markup (as used in non-markdown-based story formats) to Markdown.  You will need to choose the particular story format you used.  (If it partially supported Markdown, that Markdown will be preserved.)
 
 ### What it doesn't do but should (the to-do list)
 
@@ -97,6 +97,12 @@ The Scree test story is available formatted as markdown using PrePub ([test-prep
 [test-prepub.epub](//mcdemarco.net/tools/scree/test-prepub.epub),
 [test-prepub.html](//mcdemarco.net/tools/scree/test-prepub.html), and 
 [test-prepub.pdf](//mcdemarco.net/tools/scree/test-prepub.pdf).
+
+## Gotchas
+
+There are a lot of little markup gotchas to using Markdown in general, and Pandoc markdown is no exception.
+
+* If you did not leave blank lines before blockquotes (including each nested blockquote), you mill need the `-f markdown-blank_before_blockquote` option.
 
 ## Versions
 
