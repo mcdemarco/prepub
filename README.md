@@ -1,6 +1,6 @@
 # PrePub
 
-PrePub is a Twine 1 and 2 proofing format for converting simple Twine stories to a flat (Pandoc extended) Markdown file, useful for conversion to EPUB format with Pandoc. You will need to install [Pandoc](https://pandoc.org/), preferably version 2.8.0.1 or later, for the EPUB step.
+PrePub is a Twine 1 and 2 proofing format for converting simple Twine stories to a flat (Pandoc extended) Markdown file, useful for conversion to EPUB, PDF, or other formats via Pandoc. You will need to install [Pandoc](https://pandoc.org/), preferably version 2.8.0.1 or later, for the EPUB step.
 
 The PrePub web page is [here](http://mcdemarco.net/tools/scree/prepub/).  You can get a demo EPUB [here](http://mcdemarco.net/tools/scree/test-prepub.epub).
 
