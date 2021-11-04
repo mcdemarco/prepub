@@ -29,7 +29,7 @@ This downloads a Markdown file named something like `prepub123456789.md`.  See
 
 PrePub converts wiki-style links in your story to [implicit header references](https://pandoc.org/MANUAL.html#extension-implicit_header_references) (part of Pandoc's Markdown extensions) in the Markdown output.  It moves your start passage to the start of the file, if it isn't there already, and your colophon (*i.e.*, any passage titled StoryColophon) to the end.  It removes common special passages but otherwise leaves the passages of your story in place and in order, unless you choose to shuffle them.
 
-Markdown styling is preserved by PrePub and understood by Pandoc.  Old-style wiki formatting (which is optional in Harlowe and expected in SugarCube) will be left in place by PrePub so you can alter it in the Markdown file (using a good text editor) before compiling to EPUB.  HTML may or may not be preserved through the conversion process.
+Markdown styling is preserved by PrePub and understood by Pandoc.  Basic old-style wiki formatting (which is optional in Harlowe and expected in SugarCube) can be removed with the appropriate option, but you may have to manually convert any advanced formatting before compiling to EPUB.  HTML may or may not be preserved through the conversion process.
 
 ### Options
 
