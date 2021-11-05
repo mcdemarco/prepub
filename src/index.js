@@ -274,24 +274,37 @@ window.onload = function() {
 					content = content.replace(/~~([^~]+?)~~/gm, "<span class=\"smallcaps\">$1</span>"); //small caps to pandoc
 				}
 
-				if (twSource == "harlowe") {
+				if (twSource == "harlowe" || twSource == "writingfantasy") {
 					//Harlowe permits, and even encourages, problematic headers.
 					content = content.replace(/^(\s)*(#{1,6})([^#].*)$/gm, "\n$2 $3\n\n");
 				}
 
-				if (twSource == "sugarcube" || twSource == "twine1") {
+				if (twSource == "sugarcube" || twSource == "twine1" || twSource == "gordianbook" || twSource == "writingfantasy") {
+					//harlowe and markdown have no official underline, but the output here works in pandoc in restricted situations
+				  //note in markdown/harlowe this is alternate emphasis and should be left alone
+					//in WritingFantasy, this is a single exception to Harlowe markup.
+					content = content.replace(/__([^_]+?)__/gm, "<span class=\"underline\">$1</span>"); //underline to pandoc
+				}
+
+				if (twSource == "sugarcube" || twSource == "twine1" || twSource == "gordianbook") {
 					//harlowe and markdown have no official subscripting (and this symbol is for strikethrough)
 					content = content.replace(/~~([^~]+?)~~/gm, "~$1~"); //subscript to pandoc
 
-					content = content.replace(/==/gm, "~~"); //strikethrough
-
-					//harlowe and markdown have no official underline, but the output here works in pandoc in restricted situations
-				  //note in markdown/harlowe this is alternate emphasis and should be left alone
-					content = content.replace(/__([^_]+?)__/gm, "<span class=\"underline\">$1</span>"); //underline to pandoc
-
 					//ordered lists.
 					content = content.replace(/^# (\w)/gm, "1. $1");
+					//Gordianbook has nested sublists double-marked like harlowe's,
+					//although with a second option for #(#)'s for ordered lists like sugarcube's.
+				}
 
+				//Strikethroughs
+				if (twSource == "sugarcube" || twSource == "twine1") {
+					content = content.replace(/==/gm, "~~");
+				} else if (twSource == "gordianbook") {
+					//Has its own unique strikethrough; real strikethrough is used for subscripts as in sugarcube.
+					content = content.replace(/\-\-([^\-]+?)\-\-/gm, "~~$1~~"); 
+				}
+
+				if (twSource == "sugarcube" || twSource == "twine1") {
 					//headers
 					content = content.replace(/^!!!!!!(\w)/gm, "###### $1");
 					content = content.replace(/^!!!!!(\w)/gm, "##### $1");
@@ -299,11 +312,26 @@ window.onload = function() {
 					content = content.replace(/^!!!(\w)/gm, "### $1");
 					content = content.replace(/^!!(\w)/gm, "## $1");
 					content = content.replace(/^!(\w)/gm, "# $1");
+				} else if (twSource == "gordianbook") {
+					//Gordonbook downgrades the existing header levels, regardless of header type.
+					//Name the markdown ones away so they don't get munged in the reduction.
+					content = content.replace(/^####(\w)/gm, "!!!!$1");
+					content = content.replace(/^###(\w)/gm, "!!!$1");
+					//These two conflict with lists, so skip them for now:
+					//content = content.replace(/^##(\w)/gm, "!!$1");
+					//content = content.replace(/^#(\w)/gm, "!$1");
+					//Reduce all.
+					content = content.replace(/^!!!!(\w)/gm, "###### $1"); //h4 -> h6
+					content = content.replace(/^!!!(\w)/gm, "##### $1"); //h3 -> h5
+					content = content.replace(/^!!(\w)/gm, "#### $1"); //h2 -> h4
+					content = content.replace(/^!(\w)/gm, "### $1"); //h1 -> h3
+				}
 
+				if (twSource == "sugarcube" || twSource == "twine1" || twSource == "gordianbook") {
 					//Comments to pandoc: 
 					content = content.replace(/\/%(.*?)%\//gm, "<!--- $1 -->"); //comment to html comment
 					//tw style /% ... %/
-					if (twSource == "sugarcube") {
+					if (twSource == "sugarcube" || twSource == "gordianbook") {
 						// c-style /* ... */ 
 						content = content.replace(/\/\*(.*?)\*\//gm, "<!--- $1 -->"); //comment to html comment
 					}
@@ -320,7 +348,9 @@ window.onload = function() {
 
 				//Could convert more complicated stuff that is generally listed as "styling".  E.g.,
 				// Sugarcube escaped line breaks, line continuation, and custom styles (styles would require bracketed spans in pandoc)
-				// Harlowe and twine 1 are too forgiving about the structure (spacing) of lists, and Harlowe sublists are funky (double-marked).
+				// Harlowe and twine 1 are too forgiving about the structure (spacing) of lists.
+				// Harlowe and Gordian Book sublists are funky (double-marked).
+				// WritingFantasy describes a less functional use of backticks than in harlowe or markdown; not clear how to deal with that.
 
 				//sources: http://twinery.org/cookbook/twine1/terms/formatting.html
 				return content;
