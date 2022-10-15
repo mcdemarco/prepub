@@ -244,9 +244,12 @@ window.onload = function() {
 			
 			scrub: function(content) {
 				if (content) {
-					var twSource;
-					if (document.getElementById("tw2md").checked)
+					var twSource, gordianbook;
+					if (document.getElementById("tw2md").checked) {
 						twSource = document.querySelector("input[name=source]:checked") ? document.querySelector("input[name=source]:checked").value : "harlowe";
+						gordianbook = document.querySelector("#gordianbook").checked;
+						console.log(gordianbook);
+					}
 
 					//content = content.replace(/^ ##/gm, "##");  //(old code) Was there a concern about existing headers conflicting with generated headers?
 					content = content.replace(/\\</gm, "&lt;");
@@ -254,13 +257,13 @@ window.onload = function() {
 					content = content.replace(/\\n\\n/gm, "\n\n");
 					content = this.markdownLinks(content);
 					if (twSource) {
-						content = this.detwiddle(content, twSource);
+						content = this.detwiddle(content, twSource, gordianbook);
 					}
 				}
 				return content;
 			},
 
-			detwiddle: function(content, twSource) {
+			detwiddle: function(content, twSource, gordianbook) {
 				//convert tiddlymiki styles and other abberations to pandoc markdown.
 				//there is adequate agreement that --- is a horizontal rule.
 
@@ -279,14 +282,14 @@ window.onload = function() {
 					content = content.replace(/^(\s)*(#{1,6})([^#].*)$/gm, "\n$2 $3\n\n");
 				}
 
-				if (twSource == "sugarcube" || twSource == "twine1" || twSource == "gordianbook" || twSource == "writingfantasy") {
+				if (twSource == "sugarcube" || twSource == "twine1" || gordianbook || twSource == "writingfantasy") {
 					//harlowe and markdown have no official underline, but the output here works in pandoc in restricted situations
 				  //note in markdown/harlowe this is alternate emphasis and should be left alone
 					//in WritingFantasy, this is a single exception to Harlowe markup.
 					content = content.replace(/__([^_]+?)__/gm, "<span class=\"underline\">$1</span>"); //underline to pandoc
 				}
 
-				if (twSource == "sugarcube" || twSource == "twine1" || twSource == "gordianbook") {
+				if (twSource == "sugarcube" || twSource == "twine1" || gordianbook) {
 					//harlowe and markdown have no official subscripting (and this symbol is for strikethrough)
 					content = content.replace(/~~([^~]+?)~~/gm, "~$1~"); //subscript to pandoc
 
