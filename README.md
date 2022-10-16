@@ -106,6 +106,7 @@ While EPUB nominally supports JavaScript coding, this support is optional and th
 * It would be nice to sub-shuffle and anchor intermediate passages as in [pangamebook](https://github.com/lifelike/pangamebook).
 * It would be theoretically possible to honor include/display/print-style macros.
 * It would be nice to take the options from a settings passage.  (They currently can be put into a query string.)
+* It would be nice to show a preview.
 
 ## Versions
 
