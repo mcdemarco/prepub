@@ -37,7 +37,7 @@ For passage headers, the options include: no passage headers at all, the passage
 
 There is an option to shuffle passages; otherwise the passages appear in the same order in the text as in the source file.
 
-There is an option to convert wiki-style markup (as used in non-markdown-based story formats) to Markdown.  You will need to choose the particular story format you used.  (If it partially supported Markdown, that Markdown will be preserved.)
+There is an option to convert wiki-style markup (as used in non-markdown-based story formats) to Markdown.  You will need to choose the particular story format and/or tool you used.  (If it partially supported Markdown, that Markdown will be preserved.)
 
 After downloading the Markdown file, the PrePub GUI remains open.  To select different options, choose the appropriate radio button and/or checkbox, then click `Download` to get a new Markdown file with a slightly different name.
 
@@ -102,7 +102,7 @@ While EPUB nominally supports JavaScript coding, this support is optional and th
 * It does not rewrite your links to use its paragraph numbers (shuffled or not) a la [WritingFantasy](https://sophiehoulden.com/twine/writingfantasy_guide.html).
 * It does not warn you about duplicate implicit header references.
 * It doesn't have a preface option, and the colophon option could use a tag approach (instead of or in addition to special passaging).
-* It would be nice to respect some of the special passages and tags introduced in [Gordian Book](https://gordianbook.art)/[WritingFantasy](https://sophiehoulden.com/twine/writingfantasy_guide.html).
+* It would be nice to respect some of the special passages and tags introduced in [Gordian Book](https://gordianbook.art), [WritingFantasy](https://sophiehoulden.com/twine/writingfantasy_guide.html), and [Spiner](https://spiner.readme.io).
 * It would be nice to sub-shuffle and anchor intermediate passages as in [pangamebook](https://github.com/lifelike/pangamebook).
 * It would be theoretically possible to honor include/display/print-style macros.
 * It would be nice to take the options from a settings passage.  (They currently can be put into a query string.)
