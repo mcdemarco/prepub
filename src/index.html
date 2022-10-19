@@ -6,6 +6,7 @@
 		</title>
 		<meta charset="utf-8">
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js"></script>
 		<script>
 /**
  * PrePub <%= version %> - Twine Markdown Export Story Format
@@ -38,11 +39,12 @@
 		 .info {color: #a5a5a5;}
 		 .indent {padding-left: 1.5em;}
 		 .info.indent {display:inline-block;}
-		 p, table {padding-left: 3em;}
+		 p, table, div {padding-left: 3em;}
 		 table {caption-side:top; color:#333;}
 		 th, td {border: 1px solid #dedede; padding: 3px; text-align:center; font-weight:normal;}
 		 td {font-size: x-large;}
 		 sup {padding-left: 3px;}
+		 .prepub-preview-mode {display:none;}
 		</style>
 
 	</head>
@@ -127,17 +129,38 @@
 
 		<h3>Download</h3>
 		<p>
-			<button type="button" onclick="PrePub.convert();">Download</button>
+			<button type="button" onclick="PrePub.convert('markdown');">Download Markdown</button>
+			<span class="info indent">See the PrePub README or <a href="http://mcdemarco.net/tools/scree/prepub/" target="_blank">web page</a> for help converting the downloaded markdown file to ePub using Pandoc and PrePub's stylesheet.</span>
 		</p>
-		<p>See the PrePub README or <a href="http://mcdemarco.net/tools/scree/prepub/" target="_blank">web page</a> for help converting the downloaded file to ePub using Pandoc and PrePub's stylesheet.</p>
+
+		<p class="prepub-preview-mode">
+			<button type="button" onclick="PrePub.convert('html');">Download HTML</button>
+			<button type="button" onclick="PrePub.convert('epub');">Download ePUB</button>
+
+			<span class="info indent">If you are running a local Pandoc server, you can download the HTML preview below or an ePUB here, rather than using the command line.  The command line is recommended, however, and is required to generate PDFs.</span>
+		</p>
+
+		<section class="prepub-preview-mode">
+		<h3>Preview HTML</h3>
+
+		<p>
+			<button type="button" onclick="PrePub.convert();">Refresh</button>
+
+			<span class="info indent">This is just an approximation of the sort of output you will get from Pandoc.</span>
+		</p>
+
+		<div>
+			<iframe id="theFrame" style="width:99%;height:75vh;"></iframe>
+		</div>
+		</section>
 
 		<hr/>
 		<p>
 			<sup><a name="fn1" href="#fs1">1</a></sup> Chapbook uses some minor non-Markdown markup. <br/>
-			<sup><a name="fn2" href="#fs2">2</a></sup> Spiner claims that Harlowe uses Markdown, but it does not, so check Harlowe if you used Harlowe markup, and do not check this section if you used Markdown.<br/>
+			<sup><a name="fn2" href="#fs2">2</a></sup> Spiner claims that Harlowe uses Markdown, but it does not, so select Harlowe if you used Harlowe markup, and do not check this section at all if you used Markdown.<br/>
 			<sup><a name="fn3" href="#fs3">3</a></sup> Twine 1 story formats used markup similar, but not identical, to Sugarcube's.  (Do not check this option if you are using a modern story format within the Twine 1 editor.)<br/>
 			<sup><a name="fn4" href="#fs4">4</a></sup> WritingFantasy uses some minor non-Harlowe markup.  <br/>
-			<sup><a name="fn5" href="#fs5">5</a></sup> Gordian Book has both Harlowe and Sugarcube options, so please choose one and also check the Gordian Book box.<br/>
+			<sup><a name="fn5" href="#fs5">5</a></sup> Gordian Book has both Harlowe and Sugarcube options, so please select the appropriate one, and also check the Gordian Book box.<br/>
 		</p>
 
 		<pre id="output">

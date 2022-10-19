@@ -9,9 +9,10 @@ window.onload = function() {
 
 				if (window.location.search && window.location.search.split("?")[1].length > 0) {
 					this.useSettings(window.location.search.split("?")[1].split("&"));
-				} else
+				} else {
 					this.disenable();
-
+					this.convert();
+				}
 			},
 
 			disenable: function() {
@@ -55,14 +56,18 @@ window.onload = function() {
 					}
 				}
 				//Autodownload.
-				this.convert();
+				this.convert(true);
 			},
 	
-			convert: function() {
+			convert: function(download) {
 				var output = this.export();
 
-				var blob = new Blob([output], {type: "text/markdown;charset=utf-8"});
-				saveAs(blob, "prepub" + Date.now() + ".md");
+				this.markdown2html(output);
+
+				if (download) {
+					var blob = new Blob([output], {type: "text/markdown;charset=utf-8"});
+					saveAs(blob, "prepub" + Date.now() + ".md");
+				}
 			},
 	
 			export: function() {
@@ -248,7 +253,6 @@ window.onload = function() {
 					if (document.getElementById("tw2md").checked) {
 						twSource = document.querySelector("input[name=source]:checked") ? document.querySelector("input[name=source]:checked").value : "harlowe";
 						gordianbook = document.querySelector("#gordianbook").checked;
-						console.log(gordianbook);
 					}
 
 					//content = content.replace(/^ ##/gm, "##");  //(old code) Was there a concern about existing headers conflicting with generated headers?
@@ -357,9 +361,65 @@ window.onload = function() {
 
 				//sources: http://twinery.org/cookbook/twine1/terms/formatting.html
 				return content;
+			},
+
+			markdown2html: function(mdn) {
+
+				const headers = {
+					Accept: 'text/plain',
+					"Content-Type": 'application/json'
+				}
+				const params = {
+					text: mdn,
+					from: "markdown",
+					to: "html",
+					standalone: true,
+					"table-of-contents": false,
+					"toc-depth": 1,
+					"section-divs": true,
+				};
+				const options = {
+					headers: headers,
+					method: 'POST',
+					body: JSON.stringify( params )
+				};
+				//fetch( 'http://localhost:3030/', options )
+				fetch( './pandoc-server.cgi', options )
+					.then( response => { 
+						if (response.ok) {
+							return response.text();
+						}
+						return Promise.reject(response); 
+					})
+					.then( text => this.process(text) )
+					.catch( response  => { 
+						console.log(response);
+					} )
+			},
+
+			process: function(html) {
+				//Open the page with the preview functionality hidden, then unhide if we got a response.
+				//(Errors will go to the console regardless.)
+				document.querySelectorAll(".prepub-preview-mode").forEach(function(currentElt) {
+					currentElt.style.display = "block";
+				});
+
+				//Write the html to the frame.
+				var ifrm = document.getElementById("theFrame");
+				var doc = ifrm.contentWindow || ifrm.contentDocument.document || ifrm.contentDocument;
+
+				//Passing the css to the server isn't working, so write it to the page manually.
+			  const css = "<style>\nbody { margin: 5%; text-align: justify; font-size: medium; }\ncode { font-family: monospace; }\nh1 { text-align: left; }\nh2 { text-align: left; }\nh3 { text-align: center; }\nh3.dividerCharacter { font-size: larger; }\nh3.dividerImage img { width: 66%; }\nh4 { text-align: left; }\nh5 { text-align: left; }\nh6 { text-align: left; }\nh1.title { }\nh2.author { }\nh3.date { }\nol.toc { padding: 0; margin-left: 1em; }\nol.toc li { list-style-type: none; margin: 0; padding: 0; }\na.footnoteRef { vertical-align: super; }\nem, em em em, em em em em em { font-style: italic;}\nem em, em em em em { font-style: normal; }\n.prepub_hidden h2, h2.prepub_hidden { position: absolute; visibility: hidden; }\nh1, h2, h3 { page-break-after: avoid; break-after: avoid-page; }\nul { page-break-inside: avoid; break-inside: avoid-page; }\np { widows: 2; orphans: 2; }\n.level2 { break-before: left; }\n.level2, header { padding-bottom: 3em; } \nbody { padding-bottom: 80%; }\n</style>";
+
+				html = html.replace("</head>", css + "\n" + "</head>");
+
+				doc.document.open();
+				doc.document.write(html);
+				doc.document.close();
+				return true;
 			}
 
-		};			
+		};
 	}
 	
 	window.PrePub.load();
