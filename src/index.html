@@ -5,8 +5,7 @@
 			<%= name %>
 		</title>
 		<meta charset="utf-8">
-		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js"></script>
-		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
 		<script>
 /**
  * PrePub <%= version %> - Twine Markdown Export Story Format
@@ -129,13 +128,13 @@
 
 		<h3>Download</h3>
 		<p>
-			<button type="button" onclick="PrePub.convert('markdown');">Download Markdown</button>
+			<button type="button" onclick="PrePub.download('markdown');">Download Markdown</button>
 			<span class="info indent">See the PrePub README or <a href="http://mcdemarco.net/tools/scree/prepub/" target="_blank">web page</a> for help converting the downloaded markdown file to ePub using Pandoc and PrePub's stylesheet.</span>
 		</p>
 
 		<p class="prepub-preview-mode">
-			<button type="button" onclick="PrePub.convert('html');">Download HTML</button>
-			<button type="button" onclick="PrePub.convert('epub');">Download ePUB</button>
+			<button type="button" onclick="PrePub.download('html');">Download HTML</button>
+			<button type="button" onclick="PrePub.download('epub');">Download ePUB</button>
 
 			<span class="info indent">If you are running a local Pandoc server, you can download the HTML preview below or an ePUB here, rather than using the command line.  The command line is recommended, however, and is required to generate PDFs.</span>
 		</p>
