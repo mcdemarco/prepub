@@ -3,6 +3,8 @@ window.onload = function() {
 
 		window.PrePub = {
 
+			css: "<style>\nbody { margin: 5%; text-align: justify; font-size: medium; }\ncode { font-family: monospace; }\nh1 { text-align: left; }\nh2 { text-align: left; }\nh3 { text-align: center; }\nh3.dividerCharacter { font-size: larger; }\nh3.dividerImage img { width: 66%; }\nh4 { text-align: left; }\nh5 { text-align: left; }\nh6 { text-align: left; }\nh1.title { }\nh2.author { }\nh3.date { }\nol.toc { padding: 0; margin-left: 1em; }\nol.toc li { list-style-type: none; margin: 0; padding: 0; }\na.footnoteRef { vertical-align: super; }\nem, em em em, em em em em em { font-style: italic;}\nem em, em em em em { font-style: normal; }\n.prepub_hidden h2, h2.prepub_hidden { position: absolute; visibility: hidden; }\nh1, h2, h3 { page-break-after: avoid; break-after: avoid-page; }\nul { page-break-inside: avoid; break-inside: avoid-page; }\np { widows: 2; orphans: 2; }\n.level2 { break-before: left; }\n.level2, header { padding-bottom: 3em; } \nbody { padding-bottom: 80%; }\n</style>",
+
 			load: function() {
 				//Init function.
 				//Decide whether to just activate the UI or also parse settings and autorun.
@@ -411,7 +413,7 @@ window.onload = function() {
 				const headers = {
 					Accept: 'text/plain',
 					"Content-Type": 'application/json'
-				}
+				};
 				const params = {
 					text: mdn,
 					from: "markdown",
@@ -422,12 +424,15 @@ window.onload = function() {
 					"epub-chapter-level": 2,
 					"section-divs": true,
 				};
+				/* It seems that file inclusion should work for css but only works with images.
+					 Also tried the older flag "stylesheet".
+				*/
 				const options = {
 					headers: headers,
 					method: 'POST',
 					body: JSON.stringify( params )
 				};
-				//fetch( 'http://localhost:3030/', options )
+				//fetch( 'http://localhost:3030/', options ) //cors issues up the wazoo
 				fetch( './pandoc-server.cgi', options )
 					.then( response => { 
 						if (response.ok) {
@@ -454,9 +459,8 @@ window.onload = function() {
 					var doc = ifrm.contentWindow || ifrm.contentDocument.document || ifrm.contentDocument;
 
 					//Passing the css to the server isn't working, so write it to the page manually.
-					const css = "<style>\nbody { margin: 5%; text-align: justify; font-size: medium; }\ncode { font-family: monospace; }\nh1 { text-align: left; }\nh2 { text-align: left; }\nh3 { text-align: center; }\nh3.dividerCharacter { font-size: larger; }\nh3.dividerImage img { width: 66%; }\nh4 { text-align: left; }\nh5 { text-align: left; }\nh6 { text-align: left; }\nh1.title { }\nh2.author { }\nh3.date { }\nol.toc { padding: 0; margin-left: 1em; }\nol.toc li { list-style-type: none; margin: 0; padding: 0; }\na.footnoteRef { vertical-align: super; }\nem, em em em, em em em em em { font-style: italic;}\nem em, em em em em { font-style: normal; }\n.prepub_hidden h2, h2.prepub_hidden { position: absolute; visibility: hidden; }\nh1, h2, h3 { page-break-after: avoid; break-after: avoid-page; }\nul { page-break-inside: avoid; break-inside: avoid-page; }\np { widows: 2; orphans: 2; }\n.level2 { break-before: left; }\n.level2, header { padding-bottom: 3em; } \nbody { padding-bottom: 80%; }\n</style>";
-
-					output = output.replace("</head>", css + "\n" + "</head>");
+					//Does not fix the corresponding epub issue.
+					output = output.replace("</head>", this.css + "\n" + "</head>");
 
 					doc.document.open();
 					doc.document.write(output);
