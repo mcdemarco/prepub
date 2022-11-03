@@ -21,6 +21,11 @@ em em, em em em em { font-style: normal; }
 /* These are hidden (but retained) in some of the passage numbering options to allow navigation. */
 .prepub_hidden h2, h2.prepub_hidden { position: absolute; visibility: hidden; }
 
+/* This is styling for Chapbook-style forks */
+
+div.fork ul { list-style-type: none; margin: 0; padding: 0; }
+div.fork ul li { text-align:center; padding: 0.5em; }
+
 /* General breaking fixes */
 h1, h2, h3 { page-break-after: avoid; break-after: avoid-page; }
 

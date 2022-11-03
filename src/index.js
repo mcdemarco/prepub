@@ -300,7 +300,12 @@ window.onload = function() {
 						gordianbook = document.querySelector("#gordianbook").checked;
 					}
 
-					//content = content.replace(/^ ##/gm, "##");  //(old code) Was there a concern about existing headers conflicting with generated headers?
+					if (twSource == "chapbook") {
+						//handle chapbook forks here
+						content = content.replace(/((^>\s?\[\[[^\]]+\]\]\s*$\n)*(^>\s?\[\[[^\]]+\]\]\s*$))/gm, "\n::::{.fork}\n$1\n::::\n\n"); //fenced div for styling
+						content = content.replace(/^>\s?\[\[([^\]]+)\]\]\s*$/gm, "* [[$1]]"); //fork links to ul
+					}
+
 					content = content.replace(/\\</gm, "&lt;");
 					content = content.replace(/\\>/gm, "&gt;");
 					content = content.replace(/\\n\\n/gm, "\n\n");
@@ -422,7 +427,7 @@ window.onload = function() {
 					"table-of-contents": false,
 					"toc-depth": 1,
 					"epub-chapter-level": 2,
-					"section-divs": true,
+					"section-divs": true
 				};
 				/* It seems that file inclusion should work for css but only works with images.
 					 Also tried the older flag "stylesheet".
