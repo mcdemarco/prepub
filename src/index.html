@@ -68,7 +68,7 @@
 			<input type="radio" id="numbers" name="numbering" value="numbers" />
 			<label for="numbers">Paragraph numbers </label>
 			&nbsp;
-			<span class="info"> Paragraph numbers are arbitrary (though sequential) and are not inserted into links.</span>  
+			<span class="info"> Paragraph numbers are arbitrary (though sequential) and are not necessarily inserted into links.</span>  
 			<br/>
 			<input type="radio" id="symbol" name="numbering" value="symbol" />
 			<label for="symbol">A character divider </label>
@@ -97,6 +97,17 @@
 			<label for="shuffle">Shuffle passages </label>
 			&nbsp;
 			<span class="info"> The start passage will remain at the beginning.</span>
+		</p>
+		<p>
+			<input type="checkbox" id="rewrite" name="rewrite" value="1" />
+			<label for="rewrite">Rewrite links </label>
+			&nbsp;
+			<span class="info"> Rewrite links to use paragraph numbers as specified below.  This requires paragraph numbering, above.</span>
+			<br/>
+			<span class="indent" style="display:inline-block;white-space:nowrap;">
+				<input type="text" id="rewritePrefix"  name="rewritePrefix" placeholder="If you..." value="" /> <i>(existing link text)</i>
+				<input type="text" id="rewritePostfix"  name="rewritePostfix" placeholder="...turn to paragraph " value="" /> <i>(paragraph number)</i>.
+			</span>
 		</p>
 		<p>
 			<input type="checkbox" id="tw2md" name="tw2md" onclick="PrePub.disenable();" />

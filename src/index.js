@@ -15,6 +15,11 @@ window.onload = function() {
 					this.disenable();
 					this.convert('markdown');
 				}
+
+				document.querySelector('#rewrite').addEventListener('change', function() {
+					if (document.querySelector('#rewrite').checked)
+						document.querySelector('#numbers').checked = true;
+				});
 			},
 
 			disenable: function() {
@@ -191,11 +196,22 @@ window.onload = function() {
 
 				//Check numbering scheme.
 				var numbering = document.querySelector("input[name=numbering]:checked").value;
+				var rewriteLinks = document.getElementById("rewrite").checked;
+				var rewriteHash;
+
+				if (rewriteLinks) {
+					rewriteHash = {};
+					for (var j = 0; j < reorderedPassages.length; j++) {
+						rewriteHash[(reorderedPassages[j]).name] = j+1; 
+					}
+				}
+
+				console.log(rewriteHash);
 				
 				for (var j = 0; j < reorderedPassages.length; j++) {
-					buffer.push(this.buildPassage(reorderedPassages[j], numbering, j+1));
+					buffer.push(this.buildPassage(reorderedPassages[j], numbering, j+1, rewriteHash));
 				}
-				
+
 				if (el.querySelector(selectorColophon)) {
 					var coloContent = el.querySelector(selectorColophon).textContent + "\n\n[Restart][" + startPassageTitle + "]\n\n";
 					buffer.push(this.buildPassage({name: "Colophon", content: coloContent},numbering, "Colophon"));
@@ -218,12 +234,12 @@ window.onload = function() {
 				return yaml + this.scrub(colophonLink) + "\n\n";
 			},
 
-			buildPassage: function(passageObj, numbering, number) {
+			buildPassage: function(passageObj, numbering, number, rewriteHash) {
 				var result = [];
 
 				result.push("## ", passageObj.name);
 				if (numbering != "names")
-					 result.push(" {.prepub_hidden}"); 
+					 result.push(" {.prepub_hidden}");
 	
 				if (numbering == "numbers")
 					result.push("\n### ", number);
@@ -232,11 +248,10 @@ window.onload = function() {
 				else if (numbering == "image")
 					result.push("\n### ", "![divider image](" + document.querySelector("#symbolInput").value + ") {.dividerImage}");
 
-				result.push("\n\n", this.scrub(passageObj.content), "\n\n");
+				result.push("\n\n", this.scrub(passageObj.content, rewriteHash), "\n\n");
 				
 				return result.join('');
 			},
-
 
 			buildYaml: function(title, subtitle, author) {
 				var result = [];
@@ -257,8 +272,7 @@ window.onload = function() {
 				return result.join('');
 			},
 
-
-			markdownLinks: function(content) {
+			markdownLinks: function(content, rewriteHash) {
 				var result = content.replace(/\[\[(.*?)\]\]/g, function(match, target) {
 					var display;
 					var barIndex = target.indexOf('|');
@@ -283,7 +297,10 @@ window.onload = function() {
 							}
 						}
 					}
-					if (display)
+
+					if (rewriteHash) 
+						return rewritePrefix.value + (display ? display : target) + rewritePostfix.value + ' [' + rewriteHash[target] + '][' + target + ']' + ".";
+					else if (display)
 						return '[' + display + '][' + target + ']';
 					else
 						return '[' + target + ']';
@@ -291,8 +308,7 @@ window.onload = function() {
 				return result;
 			},
 
-			
-			scrub: function(content) {
+			scrub: function(content, rewriteHash) {
 				if (content) {
 					var twSource, gordianbook;
 					if (document.getElementById("tw2md").checked) {
@@ -309,7 +325,7 @@ window.onload = function() {
 					content = content.replace(/\\</gm, "&lt;");
 					content = content.replace(/\\>/gm, "&gt;");
 					content = content.replace(/\\n\\n/gm, "\n\n");
-					content = this.markdownLinks(content);
+					content = this.markdownLinks(content, rewriteHash);
 					if (twSource) {
 						content = this.detwiddle(content, twSource, gordianbook);
 					}
