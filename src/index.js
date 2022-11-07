@@ -1,40 +1,76 @@
-window.onload = function() {
-	if (typeof(window.PrePub) == "undefined") {
+var filesaver = require("file-saver");
+var prePub = {};
 
-		window.PrePub = {
+(function(context) {
 
-			css: "<style>\nbody { margin: 5%; text-align: justify; font-size: medium; }\ncode { font-family: monospace; }\nh1 { text-align: left; }\nh2 { text-align: left; }\nh3 { text-align: center; }\nh3.dividerCharacter { font-size: larger; }\nh3.dividerImage img { width: 66%; }\nh4 { text-align: left; }\nh5 { text-align: left; }\nh6 { text-align: left; }\nh1.title { }\nh2.author { }\nh3.date { }\nol.toc { padding: 0; margin-left: 1em; }\nol.toc li { list-style-type: none; margin: 0; padding: 0; }\na.footnoteRef { vertical-align: super; }\nem, em em em, em em em em em { font-style: italic;}\nem em, em em em em { font-style: normal; }\n.prepub_hidden h2, h2.prepub_hidden { position: absolute; visibility: hidden; }\ndiv.fork ul { list-style-type: none; margin: 0; padding: 0; }\ndiv.fork ul li { text-align:center; padding: 0.5em; }\nh1, h2, h3 { page-break-after: avoid; break-after: avoid-page; }\nul { page-break-inside: avoid; break-inside: avoid-page; }\np { widows: 2; orphans: 2; }\n.level2 { break-before: left; }\n.level2, header { padding-bottom: 3em; } \nbody { padding-bottom: 80%; }\n</style>",
+	var css = "<style>\nbody { margin: 5%; text-align: justify; font-size: medium; }\ncode { font-family: monospace; }\nh1 { text-align: left; }\nh2 { text-align: left; }\nh3 { text-align: center; }\nh3.dividerCharacter { font-size: larger; }\nh3.dividerImage img { width: 66%; }\nh4 { text-align: left; }\nh5 { text-align: left; }\nh6 { text-align: left; }\nh1.title { }\nh2.author { }\nh3.date { }\nol.toc { padding: 0; margin-left: 1em; }\nol.toc li { list-style-type: none; margin: 0; padding: 0; }\na.footnoteRef { vertical-align: super; }\nem, em em em, em em em em em { font-style: italic;}\nem em, em em em em { font-style: normal; }\n.prepub_hidden h2, h2.prepub_hidden { position: absolute; visibility: hidden; }\ndiv.fork ul { list-style-type: none; margin: 0; padding: 0; }\ndiv.fork ul li { text-align:center; padding: 0.5em; }\nh1, h2, h3 { page-break-after: avoid; break-after: avoid-page; }\nul { page-break-inside: avoid; break-inside: avoid-page; }\np { widows: 2; orphans: 2; }\n.level2 { break-before: left; }\n.level2, header { padding-bottom: 3em; } \nbody { padding-bottom: 80%; }\n</style>";
 
-			load: function() {
-				//Init function.
-				//Decide whether to just activate the UI or also parse settings and autorun.
+	//init
+	//settings
+	//story
 
-				if (window.location.search && window.location.search.split("?")[1].length > 0) {
-					this.useSettings(window.location.search.split("?")[1].split("&"));
-				} else {
-					this.disenable();
-					this.convert('markdown');
-				}
+	context.init = (function() {
 
-				document.querySelector('#rewrite').addEventListener('change', function() {
-					if (document.querySelector('#rewrite').checked)
-						document.querySelector('#numbers').checked = true;
-				});
-			},
+		return {
+			load: load
+		};
 
-			disenable: function() {
-				var disable = !(document.getElementById("tw2md")).checked;
+		function load() {
+			//Init function.
+			//Decide whether to just activate the UI or also parse settings and autorun.
 
-				var radios = document.querySelectorAll("[name=source]");
-				radios.forEach(function(currentElt) {
-					currentElt.disabled = disable;
-				});
-			},
+			if (window.location.search && window.location.search.split("?")[1].length > 0) {
+				context.settings.useSettings(window.location.search.split("?")[1].split("&"));
+			} else {
+				context.settings.disenable();
+				context.story.convert('markdown');
+			}
+			
+			activateForm();
+		};
+
 	
-			useSettings: function(settingsArray) {
+		//private
+
+		function activateForm() {
+			document.getElementById("tw2md").addEventListener('click', context.settings.disenable, false);
+			document.getElementById("rewrite").addEventListener('change', context.settings.checkRewrite, false);
+
+			//Not actually part of the settings form.
+			document.getElementById("downloadMarkdownButton").addEventListener('click', context.story.downloadMarkdown, false);
+			document.getElementById("downloadHtmlButton").addEventListener('click', context.story.downloadHTML, false);
+			document.getElementById("downloadEpubButton").addEventListener('click', context.story.downloadEPUB, false);
+			document.getElementById("refreshButton").addEventListener('click', context.story.refresh, false);
+		};
+
+	})();
+
+	context.settings = (function() {
+
+		return {
+			checkRewrite: checkRewrite,
+			disenable: disenable,
+			useSettings: useSettings
+		};
+
+		function checkRewrite() {
+			if (document.querySelector('#rewrite').checked)
+				document.querySelector('#numbers').checked = true;
+		};
+
+		function disenable() {
+			var disable = !(document.getElementById("tw2md").checked);
+
+			var radios = document.querySelectorAll("[name=source]");
+			radios.forEach(function(currentElt) {
+				currentElt.disabled = disable;
+			});
+		};
+
+			function useSettings(settingsArray) {
 				//Parse settings and autodownload.
 				var setting;
-				for (l=0; l<settingsArray.length; l++) {
+				for (var l=0; l<settingsArray.length; l++) {
 					setting = settingsArray[l].split("=");
 					if (setting.length > 0) {
 						switch (setting[0]) {
@@ -50,7 +86,8 @@ window.onload = function() {
 							}
 							break;
 						case "shuffle":
-  						document.querySelector("#shuffle").checked = true;
+							if (document.querySelector("#shuffle"))
+  							document.querySelector("#shuffle").checked = true;
 							break;
 						case "source":
 				  		if (setting.length > 1) {
@@ -63,26 +100,63 @@ window.onload = function() {
 					}
 				}
 				//Autodownload.
-				this.download('markdown');
-			},
-	
-			convert: function(toType, download) {
-				var output = this.export();
+				context.story.download('markdown');
+			};
+
+	})();
+
+	context.story = (function() {
+
+		return {
+			convert: convert,
+			download: download,
+			downloadMarkdown: downloadMarkdown,
+			downloadHTML: downloadHTML,
+			downloadEPUB: downloadEPUB,
+			downloader: downloader,
+			exporter: exporter,
+			buildTitlePage: buildTitlePage,
+			buildPassage: buildPassage,
+			buildYaml: buildYaml,
+			markdownLinks: markdownLinks,
+			refresh: refresh,
+			scrub: scrub,
+			detwiddle: detwiddle,
+			markdown2: markdown2,
+			process: process
+		};
+
+			function convert(toType, download) {
+
+				var output = exporter();
 
 				if (toType == 'markdown') {
-					this.markdown2('html', output);
+					markdown2('html', output);
 					if (download) {
-						this.downloader('markdown', output);
+						context.story.downloader('markdown', output);
 					} 
 				} else
-					this.markdown2(toType, output, download);
-			},
+					context.story.markdown2(toType, output, download);
+			};
 	
-			download: function(downloadType) {
-				this.convert(downloadType, true);
-			},
+			function download(downloadType) {
+				context.story.convert(downloadType, true);
+			};
+			function downloadMarkdown() {
+				context.story.download('markdown');
+			};
+			function downloadHTML() {
+				context.story.download('html');
+			};
+			function downloadEPUB() {
+				context.story.download('epub');
+			};
 
-			downloader: function(downloadType, output) {
+			function refresh() {
+				context.story.convert('markdown');
+			};
+
+			function downloader(downloadType, output) {
 				var mimeType;
 				var extension = "." + downloadType;
 				var decode = false;
@@ -110,23 +184,23 @@ window.onload = function() {
 					
 					fetch(url)
 						.then(res => res.blob())
-						.then(blob => saveAs(blob, "prepub" + Date.now() + extension));
+						.then(blob => filesaver.saveAs(blob, "prepub" + Date.now() + extension));
 
 				} else {
 
 					var blob = new Blob([output], {type: mimeType});
-					saveAs(blob, "prepub" + Date.now() + extension);
+					filesaver.saveAs(blob, "prepub" + Date.now() + extension);
 
 				}
-			},
+			};
 
-			export: function() {
+			function exporter() {
 				var buffer = [];
 
 				//Find the story and infer the Twine version.
 
-				var el, twVersion, selectorAuthor, selectorCSS, selectorScript, 
-						selectorSubtitle, selectorPassages, passageTitleAttr, passageIdAttr, startPassageId;
+				var el, twVersion, selectorAuthor, selectorCSS, selectorScript, selectorSubtitle, selectorPassages, 
+						selectorColophon, passageTitleAttr, passageIdAttr, startPassageId;
 
 				var specialPassageList = ["StoryTitle", "StoryIncludes", "StoryColophon", "StoryData",
 																	"StoryAuthor", "StorySubtitle", "StoryMenu", "StorySettings",
@@ -153,7 +227,7 @@ window.onload = function() {
 				var startPassageTitle = twVersion == 2 ? el.querySelector('tw-passagedata[pid="' + startPassageId + '"]').getAttribute(passageTitleAttr) : 'Start';
 
 				if (el) {
-					buffer.push(this.buildTitlePage(twVersion, el, startPassageTitle));
+					buffer.push(context.story.buildTitlePage(twVersion, el, startPassageTitle));
 				}
 
 				var passages = document.querySelectorAll(selectorPassages);
@@ -197,30 +271,28 @@ window.onload = function() {
 				//Check numbering scheme.
 				var numbering = document.querySelector("input[name=numbering]:checked").value;
 				var rewriteLinks = document.getElementById("rewrite").checked;
-				var rewriteHash;
+				var rewriteHash, j;
 
 				if (rewriteLinks) {
 					rewriteHash = {};
-					for (var j = 0; j < reorderedPassages.length; j++) {
+					for (j = 0; j < reorderedPassages.length; j++) {
 						rewriteHash[(reorderedPassages[j]).name] = j+1; 
 					}
 				}
 
-				console.log(rewriteHash);
-				
-				for (var j = 0; j < reorderedPassages.length; j++) {
-					buffer.push(this.buildPassage(reorderedPassages[j], numbering, j+1, rewriteHash));
+				for (j = 0; j < reorderedPassages.length; j++) {
+					buffer.push(context.story.buildPassage(reorderedPassages[j], numbering, j+1, rewriteHash));
 				}
 
 				if (el.querySelector(selectorColophon)) {
 					var coloContent = el.querySelector(selectorColophon).textContent + "\n\n[Restart][" + startPassageTitle + "]\n\n";
-					buffer.push(this.buildPassage({name: "Colophon", content: coloContent},numbering, "Colophon"));
+					buffer.push(context.story.buildPassage({name: "Colophon", content: coloContent},numbering, "Colophon"));
 				}
 
 				return buffer.join('');
-			},
+			};
 			
-			buildTitlePage: function(twVersion, el, startPassageTitle) {
+			function buildTitlePage(twVersion, el, startPassageTitle) {
 				var selector = twVersion == 2 ? 'tw-passagedata[name=Story' : 'div[tiddler=Story';
 
 				var title = twVersion == 2 ? el.getAttribute('name') : (el.querySelector(selector + "Title]") ? el.querySelector(selector + "Title]").textContent : "Untitled Story");
@@ -229,12 +301,12 @@ window.onload = function() {
 				//Should replace this with a configurable preface section.
 				var colophonLink = ""; //el.querySelector(selector + "Colophon]") ? '[Colophon]\n\n' : "";
 				
-				var yaml = this.buildYaml(title,subtitle,author);
+				var yaml = context.story.buildYaml(title,subtitle,author);
 
-				return yaml + this.scrub(colophonLink) + "\n\n";
-			},
+				return yaml + context.story.scrub(colophonLink) + "\n\n";
+			};
 
-			buildPassage: function(passageObj, numbering, number, rewriteHash) {
+			function buildPassage(passageObj, numbering, number, rewriteHash) {
 				var result = [];
 
 				result.push("## ", passageObj.name);
@@ -248,12 +320,12 @@ window.onload = function() {
 				else if (numbering == "image")
 					result.push("\n### ", "![divider image](" + document.querySelector("#symbolInput").value + ") {.dividerImage}");
 
-				result.push("\n\n", this.scrub(passageObj.content, rewriteHash), "\n\n");
+				result.push("\n\n", context.story.scrub(passageObj.content, rewriteHash), "\n\n");
 				
 				return result.join('');
-			},
+			};
 
-			buildYaml: function(title, subtitle, author) {
+			function buildYaml(title, subtitle, author) {
 				var result = [];
 
 				//yaml header
@@ -270,9 +342,9 @@ window.onload = function() {
 				result.push("---\n\n");
 				
 				return result.join('');
-			},
+			};
 
-			markdownLinks: function(content, rewriteHash) {
+			function markdownLinks(content, rewriteHash) {
 				var result = content.replace(/\[\[(.*?)\]\]/g, function(match, target) {
 					var display;
 					var barIndex = target.indexOf('|');
@@ -306,9 +378,9 @@ window.onload = function() {
 						return '[' + target + ']';
 				});
 				return result;
-			},
+			};
 
-			scrub: function(content, rewriteHash) {
+			function scrub(content, rewriteHash) {
 				if (content) {
 					var twSource, gordianbook;
 					if (document.getElementById("tw2md").checked) {
@@ -325,15 +397,15 @@ window.onload = function() {
 					content = content.replace(/\\</gm, "&lt;");
 					content = content.replace(/\\>/gm, "&gt;");
 					content = content.replace(/\\n\\n/gm, "\n\n");
-					content = this.markdownLinks(content, rewriteHash);
+					content = context.story.markdownLinks(content, rewriteHash);
 					if (twSource) {
-						content = this.detwiddle(content, twSource, gordianbook);
+						content = context.story.detwiddle(content, twSource, gordianbook);
 					}
 				}
 				return content;
-			},
+			};
 
-			detwiddle: function(content, twSource, gordianbook) {
+			function detwiddle(content, twSource, gordianbook) {
 				//convert tiddlymiki styles and other abberations to pandoc markdown.
 				//there is adequate agreement that --- is a horizontal rule.
 
@@ -427,9 +499,9 @@ window.onload = function() {
 
 				//sources: http://twinery.org/cookbook/twine1/terms/formatting.html
 				return content;
-			},
+			};
 
-			markdown2: function(toType, mdn, download) {
+			function markdown2(toType, mdn, download) {
 
 				const headers = {
 					Accept: 'text/plain',
@@ -461,15 +533,16 @@ window.onload = function() {
 						}
 						return Promise.reject(response); 
 					})
-					.then( text => this.process(toType, text, download) )
+					.then( text => context.story.process(toType, text, download) )
 					.catch( response  => { 
 						console.log(response);
 					} )
-			},
+			};
 
-			process: function(toType, output, download) {
+			function process(toType, output, download) {
 				//Open the page with the preview functionality hidden, then unhide if we got a response.
 				//(Errors will go to the console regardless.)
+
 				document.querySelectorAll(".prepub-preview-mode").forEach(function(currentElt) {
 					currentElt.style.display = "block";
 				});
@@ -481,7 +554,7 @@ window.onload = function() {
 
 					//Passing the css to the server isn't working, so write it to the page manually.
 					//Does not fix the corresponding epub issue.
-					output = output.replace("</head>", this.css + "\n" + "</head>");
+					output = output.replace("</head>", css + "\n" + "</head>");
 
 					doc.document.open();
 					doc.document.write(output);
@@ -489,13 +562,13 @@ window.onload = function() {
 				}
 
 				if (download) {
-					this.downloader(toType, output);
+					downloader(toType, output);
 				}
 				return true;
 			}
 
-		};
-	}
+		})();
 	
-	window.PrePub.load();
-};
+})(prePub);
+
+prePub.init.load();
