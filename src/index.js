@@ -5,9 +5,89 @@ var prePub = {};
 
 	var css = "<style>\nbody { margin: 5%; text-align: justify; font-size: medium; }\ncode { font-family: monospace; }\nh1 { text-align: left; }\nh2 { text-align: left; }\nh3 { text-align: center; }\nh3.dividerCharacter { font-size: larger; }\nh3.dividerImage img { width: 66%; }\nh4 { text-align: left; }\nh5 { text-align: left; }\nh6 { text-align: left; }\nh1.title { }\nh2.author { }\nh3.date { }\nol.toc { padding: 0; margin-left: 1em; }\nol.toc li { list-style-type: none; margin: 0; padding: 0; }\na.footnoteRef { vertical-align: super; }\nem, em em em, em em em em em { font-style: italic;}\nem em, em em em em { font-style: normal; }\n.prepub_hidden h2, h2.prepub_hidden { position: absolute; visibility: hidden; }\ndiv.fork ul { list-style-type: none; margin: 0; padding: 0; }\ndiv.fork ul li { text-align:center; padding: 0.5em; }\nh1, h2, h3 { page-break-after: avoid; break-after: avoid-page; }\nul { page-break-inside: avoid; break-inside: avoid-page; }\np { widows: 2; orphans: 2; }\n.level2 { break-before: left; }\n.level2, header { padding-bottom: 3em; } \nbody { padding-bottom: 80%; }\n</style>";
 
+	var config = {
+		numbering: "names",
+		symbol: "", 
+		path: "",
+		shuffle: false,
+		rewrite: false,
+		rewritePrefix: "",
+		rewritePostfix: "",
+		source: "markdown",
+		gordianBook: false,
+		autodownload: false
+	};
+
+	//control
 	//init
+  //pandoc
 	//settings
 	//story
+
+	context.control = (function() {
+
+		return {
+			convert: convert,
+			downloadMarkdown: downloadMarkdown,
+			downloader: downloader
+		};
+
+			function convert(toType, download) {
+
+				var output = context.story.convert();
+
+				if (toType == 'markdown') {
+					context.pandoc.markdown2('html', output);
+					if (download) {
+						downloader('markdown', output);
+					} 
+				} else
+					context.pandoc.markdown2(toType, output, download);
+			};
+	
+			function downloadMarkdown() {
+				convert('markdown', true);
+			};
+
+			function downloader(downloadType, output) {
+				var mimeType;
+				var extension = "." + downloadType;
+				var decode = false;
+				switch (downloadType) {
+				case 'markdown':
+					mimeType = "text/markdown;charset=utf-8";
+					extension = ".md";
+					break;
+
+				case 'html':
+					mimeType = "text/html;charset=utf-8";
+					break;
+
+				case 'epub':
+					mimeType = "application/epub+zip";
+					decode = true;
+					break;
+				}
+
+				if (decode) {
+					//Trick to convert base64 from the server to a binary blob.
+					//https://stackoverflow.com/a/36183085
+
+					var url = "data:" + mimeType + ";base64," + output;
+					
+					fetch(url)
+						.then(res => res.blob())
+						.then(blob => filesaver.saveAs(blob, "prepub" + Date.now() + extension));
+
+				} else {
+
+					var blob = new Blob([output], {type: mimeType});
+					filesaver.saveAs(blob, "prepub" + Date.now() + extension);
+
+				}
+			};
+
+	})();
 
 	context.init = (function() {
 
@@ -23,13 +103,12 @@ var prePub = {};
 				context.settings.useSettings(window.location.search.split("?")[1].split("&"));
 			} else {
 				context.settings.disenable();
-				context.story.convert('markdown');
+				context.control.convert('markdown');
 			}
 			
 			activateForm();
 		};
 
-	
 		//private
 
 		function activateForm() {
@@ -37,11 +116,102 @@ var prePub = {};
 			document.getElementById("rewrite").addEventListener('change', context.settings.checkRewrite, false);
 
 			//Not actually part of the settings form.
-			document.getElementById("downloadMarkdownButton").addEventListener('click', context.story.downloadMarkdown, false);
-			document.getElementById("downloadHtmlButton").addEventListener('click', context.story.downloadHTML, false);
-			document.getElementById("downloadEpubButton").addEventListener('click', context.story.downloadEPUB, false);
-			document.getElementById("refreshButton").addEventListener('click', context.story.refresh, false);
+			document.getElementById("downloadMarkdownButton").addEventListener('click', context.control.downloadMarkdown, false);
+			document.getElementById("downloadHtmlButton").addEventListener('click', context.pandoc.downloadHTML, false);
+			document.getElementById("downloadEpubButton").addEventListener('click', context.pandoc.downloadEPUB, false);
+			document.getElementById("refreshButton").addEventListener('click', context.pandoc.refresh, false);
 		};
+
+	})();
+
+	context.pandoc = (function() {
+
+		return {
+			downloadHTML: downloadHTML,
+			downloadEPUB: downloadEPUB,
+			markdown2: markdown2,
+			process: process,
+			refresh: refresh
+		};
+
+			function downloadHTML() {
+				context.control.convert('html', true);
+			};
+
+			function downloadEPUB() {
+				context.control.convert('epub', true);
+			};
+
+			function markdown2(toType, mdn, download) {
+
+				const headers = {
+					Accept: 'text/plain',
+					"Content-Type": 'application/json'
+				};
+				const params = {
+					text: mdn,
+					from: "markdown",
+					to: toType,
+					standalone: true,
+					"table-of-contents": false,
+					"toc-depth": 1,
+					"epub-chapter-level": 2,
+					"section-divs": true
+				};
+				/* It seems that file inclusion should work for css but only works with images.
+					 Also tried the older flag "stylesheet".
+				*/
+				const options = {
+					headers: headers,
+					method: 'POST',
+					body: JSON.stringify( params )
+				};
+				//fetch( 'http://localhost:3030/', options ) //cors issues up the wazoo
+				fetch( './pandoc-server.cgi', options )
+					.then( response => { 
+						if (response.ok) {
+							return response.text();
+						}
+						return Promise.reject(response); 
+					})
+					.then( text => context.pandoc.process(toType, text, download) )
+					.catch( response  => { 
+						console.log(response);
+					} )
+			};
+
+			function process(toType, output, download) {
+				//Opened the page with the preview functionality hidden; 
+				//here we unhide if we got a response.
+				//(Errors will go to the console regardless.)
+
+				document.querySelectorAll(".prepub-preview-mode").forEach(function(currentElt) {
+					currentElt.style.display = "block";
+				});
+
+				//Write the html to the frame.
+				if (toType == 'html') {
+					var ifrm = document.getElementById("theFrame");
+					var doc = ifrm.contentWindow || ifrm.contentDocument.document || ifrm.contentDocument;
+
+					//Passing the css to the server isn't working, so write it to the page manually.
+					//Does not fix the corresponding epub issue.
+					output = output.replace("</head>", css + "\n" + "</head>");
+
+					doc.document.open();
+					doc.document.write(output);
+					doc.document.close();
+				}
+
+				if (download) {
+					context.control.downloader(toType, output);
+				}
+				return true;
+			}
+
+			function refresh() {
+				context.control.convert('markdown');
+			};
 
 	})();
 
@@ -100,7 +270,7 @@ var prePub = {};
 					}
 				}
 				//Autodownload.
-				context.story.download('markdown');
+				context.control.convert('markdown', true);
 			};
 
 	})();
@@ -109,92 +279,15 @@ var prePub = {};
 
 		return {
 			convert: convert,
-			download: download,
-			downloadMarkdown: downloadMarkdown,
-			downloadHTML: downloadHTML,
-			downloadEPUB: downloadEPUB,
-			downloader: downloader,
-			exporter: exporter,
 			buildTitlePage: buildTitlePage,
 			buildPassage: buildPassage,
 			buildYaml: buildYaml,
 			markdownLinks: markdownLinks,
-			refresh: refresh,
 			scrub: scrub,
-			detwiddle: detwiddle,
-			markdown2: markdown2,
-			process: process
+			detwiddle: detwiddle
 		};
 
-			function convert(toType, download) {
-
-				var output = exporter();
-
-				if (toType == 'markdown') {
-					markdown2('html', output);
-					if (download) {
-						context.story.downloader('markdown', output);
-					} 
-				} else
-					context.story.markdown2(toType, output, download);
-			};
-	
-			function download(downloadType) {
-				context.story.convert(downloadType, true);
-			};
-			function downloadMarkdown() {
-				context.story.download('markdown');
-			};
-			function downloadHTML() {
-				context.story.download('html');
-			};
-			function downloadEPUB() {
-				context.story.download('epub');
-			};
-
-			function refresh() {
-				context.story.convert('markdown');
-			};
-
-			function downloader(downloadType, output) {
-				var mimeType;
-				var extension = "." + downloadType;
-				var decode = false;
-				switch (downloadType) {
-				case 'markdown':
-					mimeType = "text/markdown;charset=utf-8";
-					extension = ".md";
-					break;
-
-				case 'html':
-					mimeType = "text/html;charset=utf-8";
-					break;
-
-				case 'epub':
-					mimeType = "application/epub+zip";
-					decode = true;
-					break;
-				}
-
-				if (decode) {
-					//Trick to convert base64 from the server to a binary blob.
-					//https://stackoverflow.com/a/36183085
-
-					var url = "data:" + mimeType + ";base64," + output;
-					
-					fetch(url)
-						.then(res => res.blob())
-						.then(blob => filesaver.saveAs(blob, "prepub" + Date.now() + extension));
-
-				} else {
-
-					var blob = new Blob([output], {type: mimeType});
-					filesaver.saveAs(blob, "prepub" + Date.now() + extension);
-
-				}
-			};
-
-			function exporter() {
+		function convert() {
 				var buffer = [];
 
 				//Find the story and infer the Twine version.
@@ -227,7 +320,7 @@ var prePub = {};
 				var startPassageTitle = twVersion == 2 ? el.querySelector('tw-passagedata[pid="' + startPassageId + '"]').getAttribute(passageTitleAttr) : 'Start';
 
 				if (el) {
-					buffer.push(context.story.buildTitlePage(twVersion, el, startPassageTitle));
+					buffer.push(buildTitlePage(twVersion, el, startPassageTitle));
 				}
 
 				var passages = document.querySelectorAll(selectorPassages);
@@ -281,16 +374,16 @@ var prePub = {};
 				}
 
 				for (j = 0; j < reorderedPassages.length; j++) {
-					buffer.push(context.story.buildPassage(reorderedPassages[j], numbering, j+1, rewriteHash));
+					buffer.push(buildPassage(reorderedPassages[j], numbering, j+1, rewriteHash));
 				}
 
 				if (el.querySelector(selectorColophon)) {
 					var coloContent = el.querySelector(selectorColophon).textContent + "\n\n[Restart][" + startPassageTitle + "]\n\n";
-					buffer.push(context.story.buildPassage({name: "Colophon", content: coloContent},numbering, "Colophon"));
+					buffer.push(buildPassage({name: "Colophon", content: coloContent},numbering, "Colophon"));
 				}
 
 				return buffer.join('');
-			};
+		};
 			
 			function buildTitlePage(twVersion, el, startPassageTitle) {
 				var selector = twVersion == 2 ? 'tw-passagedata[name=Story' : 'div[tiddler=Story';
@@ -301,9 +394,9 @@ var prePub = {};
 				//Should replace this with a configurable preface section.
 				var colophonLink = ""; //el.querySelector(selector + "Colophon]") ? '[Colophon]\n\n' : "";
 				
-				var yaml = context.story.buildYaml(title,subtitle,author);
+				var yaml = buildYaml(title,subtitle,author);
 
-				return yaml + context.story.scrub(colophonLink) + "\n\n";
+				return yaml + scrub(colophonLink) + "\n\n";
 			};
 
 			function buildPassage(passageObj, numbering, number, rewriteHash) {
@@ -320,7 +413,7 @@ var prePub = {};
 				else if (numbering == "image")
 					result.push("\n### ", "![divider image](" + document.querySelector("#symbolInput").value + ") {.dividerImage}");
 
-				result.push("\n\n", context.story.scrub(passageObj.content, rewriteHash), "\n\n");
+				result.push("\n\n", scrub(passageObj.content, rewriteHash), "\n\n");
 				
 				return result.join('');
 			};
@@ -397,9 +490,9 @@ var prePub = {};
 					content = content.replace(/\\</gm, "&lt;");
 					content = content.replace(/\\>/gm, "&gt;");
 					content = content.replace(/\\n\\n/gm, "\n\n");
-					content = context.story.markdownLinks(content, rewriteHash);
+					content = markdownLinks(content, rewriteHash);
 					if (twSource) {
-						content = context.story.detwiddle(content, twSource, gordianbook);
+						content = detwiddle(content, twSource, gordianbook);
 					}
 				}
 				return content;
@@ -500,72 +593,6 @@ var prePub = {};
 				//sources: http://twinery.org/cookbook/twine1/terms/formatting.html
 				return content;
 			};
-
-			function markdown2(toType, mdn, download) {
-
-				const headers = {
-					Accept: 'text/plain',
-					"Content-Type": 'application/json'
-				};
-				const params = {
-					text: mdn,
-					from: "markdown",
-					to: toType,
-					standalone: true,
-					"table-of-contents": false,
-					"toc-depth": 1,
-					"epub-chapter-level": 2,
-					"section-divs": true
-				};
-				/* It seems that file inclusion should work for css but only works with images.
-					 Also tried the older flag "stylesheet".
-				*/
-				const options = {
-					headers: headers,
-					method: 'POST',
-					body: JSON.stringify( params )
-				};
-				//fetch( 'http://localhost:3030/', options ) //cors issues up the wazoo
-				fetch( './pandoc-server.cgi', options )
-					.then( response => { 
-						if (response.ok) {
-							return response.text();
-						}
-						return Promise.reject(response); 
-					})
-					.then( text => context.story.process(toType, text, download) )
-					.catch( response  => { 
-						console.log(response);
-					} )
-			};
-
-			function process(toType, output, download) {
-				//Open the page with the preview functionality hidden, then unhide if we got a response.
-				//(Errors will go to the console regardless.)
-
-				document.querySelectorAll(".prepub-preview-mode").forEach(function(currentElt) {
-					currentElt.style.display = "block";
-				});
-
-				//Write the html to the frame.
-				if (toType == 'html') {
-					var ifrm = document.getElementById("theFrame");
-					var doc = ifrm.contentWindow || ifrm.contentDocument.document || ifrm.contentDocument;
-
-					//Passing the css to the server isn't working, so write it to the page manually.
-					//Does not fix the corresponding epub issue.
-					output = output.replace("</head>", css + "\n" + "</head>");
-
-					doc.document.open();
-					doc.document.write(output);
-					doc.document.close();
-				}
-
-				if (download) {
-					downloader(toType, output);
-				}
-				return true;
-			}
 
 		})();
 	
