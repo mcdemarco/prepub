@@ -39,17 +39,20 @@ var prePub = {};
 			downloader: downloader
 		};
 
-		function convert(toType, download) {
+		function convert(toType, download, init) {
 
-				var output = context.story.convert();
+			if (!init)
+				context.settings.parseForm();
 
-				if (toType == 'markdown') {
-					context.pandoc.markdown2('html', output);
-					if (download) {
-						downloader('markdown', output);
-					} 
-				} else
-					context.pandoc.markdown2(toType, output, download);
+			var output = context.story.convert();
+			
+			if (toType == 'markdown') {
+				context.pandoc.markdown2('html', output);
+				if (download) {
+					downloader('markdown', output);
+				} 
+			} else
+				context.pandoc.markdown2(toType, output, download);
 		};
 	
 		function downloadMarkdown() {
@@ -104,16 +107,16 @@ var prePub = {};
 
 		function load() {
 			//Init function.
-			//Decide whether to just activate the UI or also parse settings and autorun.
 
+			//Load settings.
 			context.settings.load();
 
+			//Some form adjustments.
 			context.settings.disenable();
-
-			context.control.convert('markdown', config.autodownload);
-			
 			activateForm();
 
+			//Initial conversion.
+			context.control.convert('markdown', config.autodownload, true);
 		};
 
 		//private
@@ -189,9 +192,10 @@ var prePub = {};
 
 			function process(toType, output, download) {
 				//Opened the page with the preview functionality hidden; 
-				//here we unhide if we got a response.
+				//here we unhide because we got a response.
 				//(Errors will go to the console regardless.)
 
+				//Unhide preview.
 				document.querySelectorAll(".prepub-preview-mode").forEach(function(currentElt) {
 					currentElt.style.display = "block";
 				});
@@ -227,7 +231,8 @@ var prePub = {};
 		return {
 			checkRewrite: checkRewrite,
 			disenable: disenable,
-			load: load
+			load: load,
+			parseForm: parseForm
 		};
 
 		function checkRewrite() {
@@ -248,6 +253,24 @@ var prePub = {};
 			read();
 			apply();
 			show();
+		};
+
+		function parseForm(ev) {
+			//On conversion events, check for settings form changes and parse into the config.
+			config.numbering = document.querySelector("input[name='numbering']:checked") ? document.querySelector("input[name='numbering']:checked").value : "names";
+			config.symbol =  document.getElementById("symbol") && document.getElementById("symbol").checked && document.getElementById("symbolInput") ? document.getElementById("symbolInput").value.trim() : "";
+			config.path =  document.getElementById("path") && document.getElementById("path").checked && document.getElementById("symbolInput") ? document.getElementById("symbolInput").value.trim() : "";
+			config.shuffle = document.getElementById("shuffle") ? document.getElementById("shuffle").checked : false;
+			config.rewrite = document.getElementById("rewrite") ? document.getElementById("rewrite").checked : false;
+			config.rewritePrefix = document.getElementById("rewritePrefix") ? document.getElementById("rewritePrefix").value : "";
+			config.rewritePostfix = document.getElementById("rewritePostfix") ? document.getElementById("rewritePostfix").value : "";
+			config.source = document.querySelector("input[name='source']:checked") ? document.querySelector("input[name='source']:checked").value : "markdown";
+			config.gordianbook = document.getElementById("gordianbook") ? document.getElementById("gordianbook").checked : false;
+
+			//Also show changes.
+			show();
+			//Also save changes.
+			save();
 		}
 
 
@@ -259,7 +282,6 @@ var prePub = {};
 			Object.entries(config).forEach(function(arry, index) {
 				key = arry[0];
 				val = arry[1];
-				console.log(key + ": " + val);
 				
 				switch (key) {
 
@@ -286,7 +308,7 @@ var prePub = {};
 				case "source":
 				  if (val == "markdown") {
 						document.querySelector("#tw2md").checked = false;
-						document.querySelector("[name=source])").checked = false;
+						document.querySelectorAll("[name=source])").checked = false;
 					} else {
 						document.querySelector("#tw2md").checked = true;
 						document.querySelector("#" + val).checked = true;
@@ -380,13 +402,22 @@ var prePub = {};
 
 		};
 
+		function save() {
+			//Save settings to local storage. 
+			try {
+				localStorage.setItem("prepub-settings" + (ifid() ? "-" + ifid() : ""), JSON.stringify(config));
+			} catch(e) {
+				console.log("Failed to save settings to local storage.");
+			}
+		};
+
 		function show() {
 			//Presence of setting determines presence of element.
 			if (config.showSettings) {
 				document.getElementById("settingsDisplayDiv").style.display = "block";
 				document.getElementById("settingsTextarea").value = ":: PrePubSettings\r\n\r\n" + JSON.stringify(config, null, '\t') + "\r\n";
 			}
-		}
+		};
 
 	})();
 
@@ -456,7 +487,7 @@ var prePub = {};
 				//Remove start passage from list.
 				var start = reorderedPassages.splice(startIdx,1);
 
-				if (document.getElementById("shuffle").checked) {
+				if (config.shuffle) {
 					//Shuffle the others.
 					var r, s, temp;
 					for (s = reorderedPassages.length - 1; s > 0; s--) {
@@ -471,8 +502,8 @@ var prePub = {};
 				reorderedPassages = start.concat(reorderedPassages);
 
 				//Check numbering scheme.
-				var numbering = document.querySelector("input[name=numbering]:checked").value;
-				var rewriteLinks = document.getElementById("rewrite").checked;
+				var numbering = config.numbering;
+				var rewriteLinks = config.rewrite;
 				var rewriteHash, j;
 
 				if (rewriteLinks) {
@@ -518,9 +549,9 @@ var prePub = {};
 				if (numbering == "numbers")
 					result.push("\n### ", number);
 				else if (numbering == "symbol")
-					result.push("\n### ", document.querySelector("#symbolInput").value, " {.dividerCharacter}");
+					result.push("\n### ", config.symbol, " {.dividerCharacter}");
 				else if (numbering == "image")
-					result.push("\n### ", "![divider image](" + document.querySelector("#symbolInput").value + ") {.dividerImage}");
+					result.push("\n### ", "![divider image](" + config.path + ") {.dividerImage}");
 
 				result.push("\n\n", scrub(passageObj.content, rewriteHash), "\n\n");
 				
@@ -585,9 +616,9 @@ var prePub = {};
 			function scrub(content, rewriteHash) {
 				if (content) {
 					var twSource, gordianbook;
-					if (document.getElementById("tw2md").checked) {
-						twSource = document.querySelector("input[name=source]:checked") ? document.querySelector("input[name=source]:checked").value : "harlowe";
-						gordianbook = document.querySelector("#gordianbook").checked;
+					if (config.source != "markdown") {
+						twSource = config.source ? config.source : "harlowe";
+						gordianbook = config.gordianbook;
 					}
 
 					if (twSource == "chapbook") {
