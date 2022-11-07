@@ -43,6 +43,9 @@
 		 td {font-size: x-large;}
 		 sup {padding-left: 3px;}
 		 .prepub-preview-mode {display:none;}
+		 div#settingsDisplayDiv {margin:0; padding:0;display:none;}
+		 textarea {width: 100%; height:20em;}
+		 textarea.settings {height:16em; width:20em;}
 		</style>
 
 	</head>
@@ -136,6 +139,22 @@
 				(It does not convert macros or other scripting.)
 			</span>
 		</p>
+
+		<div id="settingsDisplayDiv">
+			<h3>Settings</h3>
+			<p>
+				<div style="white-space:nowrap;">
+					<div style="display:inline-block;">
+						<b>Currently selected settings</b><br/>
+						<textarea id="settingsTextarea" class="settings"></textarea>
+					</div>
+					<div style="display:inline-block;">
+						<b>Settings found in story</b><br/>
+						<textarea id="storySettingsTextarea" class="settings" placeholder="no settings"></textarea> 
+					</div>
+				</div>
+			</p>
+		</div>
 
 		<h3>Download</h3>
 		<p>

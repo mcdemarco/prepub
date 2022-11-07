@@ -7,16 +7,23 @@ var prePub = {};
 
 	var config = {
 		numbering: "names",
-		symbol: "", 
+		symbol: "",
 		path: "",
 		shuffle: false,
 		rewrite: false,
 		rewritePrefix: "",
 		rewritePostfix: "",
 		source: "markdown",
-		gordianBook: false,
-		autodownload: false
+		gordianbook: false,
+		autodownload: false,
+		showSettings: true
 	};
+
+	var specialPassageList = ["StoryTitle", "StoryIncludes", "StoryColophon", "StoryData",
+														"StoryAuthor", "StorySubtitle", "StoryMenu", "StorySettings",
+														"StoryBanner", "StoryCaption", "StoryInit", "StoryShare", 
+														"PassageDone", "PassageFooter", "PassageHeader", "PassageReady",
+														"MenuOptions", "MenuShare", "DotGraphSettings", "PrePubSettings"];
 
 	//control
 	//init
@@ -32,7 +39,7 @@ var prePub = {};
 			downloader: downloader
 		};
 
-			function convert(toType, download) {
+		function convert(toType, download) {
 
 				var output = context.story.convert();
 
@@ -43,13 +50,13 @@ var prePub = {};
 					} 
 				} else
 					context.pandoc.markdown2(toType, output, download);
-			};
+		};
 	
-			function downloadMarkdown() {
+		function downloadMarkdown() {
 				convert('markdown', true);
-			};
+		};
 
-			function downloader(downloadType, output) {
+		function downloader(downloadType, output) {
 				var mimeType;
 				var extension = "." + downloadType;
 				var decode = false;
@@ -85,7 +92,7 @@ var prePub = {};
 					filesaver.saveAs(blob, "prepub" + Date.now() + extension);
 
 				}
-			};
+		};
 
 	})();
 
@@ -99,14 +106,14 @@ var prePub = {};
 			//Init function.
 			//Decide whether to just activate the UI or also parse settings and autorun.
 
-			if (window.location.search && window.location.search.split("?")[1].length > 0) {
-				context.settings.useSettings(window.location.search.split("?")[1].split("&"));
-			} else {
-				context.settings.disenable();
-				context.control.convert('markdown');
-			}
+			context.settings.load();
+
+			context.settings.disenable();
+
+			context.control.convert('markdown', config.autodownload);
 			
 			activateForm();
+
 		};
 
 		//private
@@ -220,7 +227,7 @@ var prePub = {};
 		return {
 			checkRewrite: checkRewrite,
 			disenable: disenable,
-			useSettings: useSettings
+			load: load
 		};
 
 		function checkRewrite() {
@@ -237,41 +244,149 @@ var prePub = {};
 			});
 		};
 
-			function useSettings(settingsArray) {
-				//Parse settings and autodownload.
-				var setting;
-				for (var l=0; l<settingsArray.length; l++) {
-					setting = settingsArray[l].split("=");
-					if (setting.length > 0) {
-						switch (setting[0]) {
+		function load() {
+			read();
+			apply();
+			show();
+		}
 
-						case "numbering":
-							if (setting.length > 1) {
-								document.querySelector("#" + setting[1]).checked = true;
-							}
-							break;
-						case "symbolInput":
-							if (setting.length > 1) {
-								document.querySelector("#symbolInput").value = decodeURIComponent(setting[1]);
-							}
-							break;
-						case "shuffle":
-							if (document.querySelector("#shuffle"))
-  							document.querySelector("#shuffle").checked = true;
-							break;
-						case "source":
-				  		if (setting.length > 1) {
-								document.querySelector("#tw2md").checked = true;
-								document.querySelector("#" + setting[1]).checked = true;
-							}
-							break;
-						}
 
+		//private
+
+		function apply() {
+			var key, val;
+			//Apply the possibly changed settings from config to the form.
+			Object.entries(config).forEach(function(arry, index) {
+				key = arry[0];
+				val = arry[1];
+				console.log(key + ": " + val);
+				
+				switch (key) {
+
+				case "numbering":
+					document.querySelector("#" + val).checked = true;
+					break;
+
+				case "symbol":
+				case "path":
+					document.querySelector("#symbolInput").value = val;
+					break;
+					
+				case "shuffle":
+				case "rewrite":
+				case "gordianBook":
+				  document.querySelector("#" + key).checked = val;
+					break;
+
+				case "rewritePrefix":
+				case "rewritePostfix":
+					document.querySelector("#" + key).value = val;
+					break;
+
+				case "source":
+				  if (val == "markdown") {
+						document.querySelector("#tw2md").checked = false;
+						document.querySelector("[name=source])").checked = false;
+					} else {
+						document.querySelector("#tw2md").checked = true;
+						document.querySelector("#" + val).checked = true;
 					}
+					break;
+
 				}
-				//Autodownload.
-				context.control.convert('markdown', true);
-			};
+
+			});
+		};
+
+		function ifid() {
+			return window.document.querySelector('tw-storydata') ? window.document.querySelector('tw-storydata').getAttribute('ifid').toUpperCase() : "";
+		};
+
+		function loadFromStorage() {
+			//Check local storage for settings.
+			var ppSettings;
+			try {
+				ppSettings = localStorage.getItem("prepub-settings" + (ifid() ? "-" + ifid() : ""));
+				if (ppSettings)
+					return JSON.parse(ppSettings);
+			} catch(e) {
+				console.log("Error checking local storage for previous PrePub settings for this story: " + e.description);
+			}
+			return {};
+		};
+
+		function merge(ppSettings) {
+			//Incorporate settings object into config object.
+			Object.entries(ppSettings).forEach(function(arry, index) {
+				config[arry[0]] = arry[1];
+			});
+		}
+
+		function mergeFromURL(settingsArray) {
+			var setting;
+			for (var l=0; l<settingsArray.length; l++) {
+				setting = settingsArray[l].split("=");
+				if (setting.length > 0) {
+					config[setting] = setting.length > 1 ? decodeURIComponent(setting[1]) : true;
+				}
+			}
+		};
+
+		function read() {
+
+			var PrePubSettings, StorySettings, ppSettings;
+
+			//Check URL for settings.
+			if (window.location.search && window.location.search.split("?")[1].length > 0) {
+				mergeFromURL(window.location.search.split("?")[1].split("&"));
+				return;
+			} 
+				
+			//Check story for settings.
+			if (window.document.getElementById("storeArea"))
+				PrePubSettings = window.document.getElementById("storeArea").querySelector('div[tiddler="PrePubSettings"]');
+			else 
+				PrePubSettings = window.document.querySelector('tw-passagedata[name="PrePubSettings"]');
+			
+			if (PrePubSettings) {
+				//Doesn't require prepub: label or single-line layout but must still parse as a JSON object.
+				ppSettings = PrePubSettings.innerText;
+			} else {
+				//Parse the StorySettings for prepub presets.  Must be a single line.  May fail mysteriously under Tweego 1.3.
+				if (window.document.getElementById("storeArea"))
+					StorySettings = window.document.getElementById("storeArea").querySelector('div[tiddler="StorySettings"]');
+				else 
+					StorySettings = window.document.querySelector('tw-passagedata[name="StorySettings"]');
+				
+				if (StorySettings && StorySettings.innerText && StorySettings.innerText.indexOf("prepub:") > -1) {
+					ppSettings = (StorySettings.innerText.split("prepub:")[1]).split("\n")[0];
+				}
+			}
+			
+			if (ppSettings) {
+				try {
+					ppSettings = JSON.parse(ppSettings);
+					//Also write to the appropriate textarea.
+					document.getElementById("storySettingsTextarea").value = ":: PrePubSettings\r\n\r\n" + JSON.stringify(ppSettings, null, '\t') + "\r\n";
+				} catch(e) {
+					console.log("Found but couldn't parse prepub settings from story: " + ppSettings);
+					ppSettings = loadFromStorage();
+				}
+			} else {
+				ppSettings = loadFromStorage();
+			}
+
+			merge(ppSettings);
+
+		};
+
+		function show() {
+			//Presence of setting determines presence of element.
+			if (config.showSettings) {
+				document.getElementById("settingsDisplayDiv").style.display = "block";
+				document.getElementById("settingsTextarea").value = ":: PrePubSettings\r\n\r\n" + JSON.stringify(config, null, '\t') + "\r\n";
+			}
+		}
 
 	})();
 
@@ -294,12 +409,6 @@ var prePub = {};
 
 				var el, twVersion, selectorAuthor, selectorCSS, selectorScript, selectorSubtitle, selectorPassages, 
 						selectorColophon, passageTitleAttr, passageIdAttr, startPassageId;
-
-				var specialPassageList = ["StoryTitle", "StoryIncludes", "StoryColophon", "StoryData",
-																	"StoryAuthor", "StorySubtitle", "StoryMenu", "StorySettings",
-																	"StoryBanner", "StoryCaption", "StoryInit", "StoryShare", 
-																	"PassageDone", "PassageFooter", "PassageHeader", "PassageReady",
-																	"MenuOptions", "MenuShare", "DotGraphSettings"];
 
 				if (document.getElementsByTagName('tw-storydata').length > 0) {
 					el = document.querySelector('tw-storydata');
