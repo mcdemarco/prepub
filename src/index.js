@@ -166,11 +166,11 @@ var prePub = {};
 					"table-of-contents": false,
 					"toc-depth": 1,
 					"epub-chapter-level": 2,
-					"section-divs": true
+					"section-divs": true,
+					"variables": {
+						"header-includes": css
+					}
 				};
-				/* It seems that file inclusion should work for css but only works with images.
-					 Also tried the older flag "stylesheet".
-				*/
 				const options = {
 					headers: headers,
 					method: 'POST',
@@ -207,7 +207,7 @@ var prePub = {};
 
 					//Passing the css to the server isn't working, so write it to the page manually.
 					//Does not fix the corresponding epub issue.
-					output = output.replace("</head>", css + "\n" + "</head>");
+					//output = output.replace("</head>", css + "\n" + "</head>");
 
 					doc.document.open();
 					doc.document.write(output);
