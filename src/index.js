@@ -176,8 +176,11 @@ var prePub = {};
 					method: 'POST',
 					body: JSON.stringify( params )
 				};
-				//fetch( 'http://localhost:3030/', options ) //cors issues up the wazoo
-				fetch( './pandoc-server.cgi', options )
+				//fetch( './pandoc-server.cgi', options ) //cgi version requires local webserver setup
+
+				//for freestanding server just type ./pandoc-server in the terminal.
+				//cors issues fixed in nightly 11/10/22; run nightlies for now
+				fetch( 'http://localhost:3030/', options )
 					.then( response => { 
 						if (response.ok) {
 							return response.text();
