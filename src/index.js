@@ -11,8 +11,7 @@ var prePub = {};
 		path: "",
 		shuffle: false,
 		rewrite: false,
-		rewritePrefix: "",
-		rewritePostfix: "",
+		rewriteExpression: "",
 		source: "markdown",
 		gordianbook: false,
 		autodownload: false,
@@ -265,8 +264,7 @@ var prePub = {};
 			config.path =  document.getElementById("path") && document.getElementById("path").checked && document.getElementById("symbolInput") ? document.getElementById("symbolInput").value.trim() : "";
 			config.shuffle = document.getElementById("shuffle") ? document.getElementById("shuffle").checked : false;
 			config.rewrite = document.getElementById("rewrite") ? document.getElementById("rewrite").checked : false;
-			config.rewritePrefix = document.getElementById("rewritePrefix") ? document.getElementById("rewritePrefix").value : "";
-			config.rewritePostfix = document.getElementById("rewritePostfix") ? document.getElementById("rewritePostfix").value : "";
+			config.rewriteExpression = document.getElementById("rewriteExpression") ? document.getElementById("rewriteExpression").value : "";
 			config.source = document.querySelector("input[name='source']:checked") ? document.querySelector("input[name='source']:checked").value : "markdown";
 			config.gordianbook = document.getElementById("gordianbook") ? document.getElementById("gordianbook").checked : false;
 
@@ -303,8 +301,7 @@ var prePub = {};
 				  document.querySelector("#" + key).checked = val;
 					break;
 
-				case "rewritePrefix":
-				case "rewritePostfix":
+				case "rewriteExpression":
 					document.querySelector("#" + key).value = val;
 					break;
 
@@ -427,13 +424,7 @@ var prePub = {};
 	context.story = (function() {
 
 		return {
-			convert: convert,
-			buildTitlePage: buildTitlePage,
-			buildPassage: buildPassage,
-			buildYaml: buildYaml,
-			markdownLinks: markdownLinks,
-			scrub: scrub,
-			detwiddle: detwiddle
+			convert: convert
 		};
 
 		function convert() {
@@ -527,6 +518,8 @@ var prePub = {};
 
 				return buffer.join('');
 		};
+
+		//private
 			
 			function buildTitlePage(twVersion, el, startPassageTitle) {
 				var selector = twVersion == 2 ? 'tw-passagedata[name=Story' : 'div[tiddler=Story';
@@ -607,7 +600,7 @@ var prePub = {};
 					}
 
 					if (rewriteHash) 
-						return rewritePrefix.value + (display ? display : target) + rewritePostfix.value + ' [' + rewriteHash[target] + '][' + target + ']' + ".";
+						return rewriter(rewriteHash, display, target);
 					else if (display)
 						return '[' + display + '][' + target + ']';
 					else
@@ -615,6 +608,10 @@ var prePub = {};
 				});
 				return result;
 			};
+
+		function rewriter(rewriteHash, display, target) {
+			return config.rewriteExpression.replace("@@@", display ? display : target).replace("###", rewriteHash[target]).replace("]", "][" + target + "]");
+		}
 
 			function scrub(content, rewriteHash) {
 				if (content) {

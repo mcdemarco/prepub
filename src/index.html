@@ -46,6 +46,7 @@
 		 div#settingsDisplayDiv {margin:0; padding:0;display:none;}
 		 textarea {width: 100%; height:20em;}
 		 textarea.settings {height:16em; width:20em;}
+		 input#rewriteExpression {width:30em;}
 		</style>
 
 	</head>
@@ -104,11 +105,12 @@
 			<input type="checkbox" id="rewrite" name="rewrite" value="1" />
 			<label for="rewrite">Rewrite links </label>
 			&nbsp;
-			<span class="info"> Rewrite links to use paragraph numbers as specified below.  This requires paragraph numbering, above.</span>
+			<span class="info"> Rewrite links to use paragraph numbers as specified below: <br/>
+				"@@@" represents the original link text from your story, "###" is the paragraph number, and the brackets "[..]" surround the (optional) new link text.<br/>
+				This requires paragraph numbering, above.</span>
 			<br/>
 			<span class="indent" style="display:inline-block;white-space:nowrap;">
-				<input type="text" id="rewritePrefix"  name="rewritePrefix" placeholder="If you..." value="" /> <i>(existing link text)</i>
-				<input type="text" id="rewritePostfix"  name="rewritePostfix" placeholder="...turn to paragraph " value="" /> <i>(paragraph number)</i>.
+				<input type="text" id="rewriteExpression" name="rewriteExpression" placeholder="If you @@@, turn to [paragraph ###]." value="" />
 			</span>
 		</p>
 		<p>
