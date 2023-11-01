@@ -14,6 +14,8 @@ and place it inside the new `prepub` folder.  See [the Twine cookbook](https://t
 
 You should also download [`prepub.css`](https://mcdemarco.net/tools/scree/prepub/prepub.css), especially if you intend to use paragraph numbering or other options, and optionally [`epub.yaml`](https://mcdemarco.net/tools/scree/prepub/epub.yaml), some convenient defaults for Pandoc.  It's also handy to try your results out as HTML first, since it's closely related to EPUB format; for conversion to HTML please use [`html.yaml`](https://mcdemarco.net/tools/scree/prepub/html.yaml) to avoid [gotchas](#Gotchas).
 
+To see Pandoc previews inside of PrePub, you should install pandoc version 3.0 or greater, then run `pandoc-server` in a local terminal/shell.
+
 ## Use
 
 PrePub produces a Twine HTML file that, when opened in a browser, shows you the PrePub options and lets you download its Pandoc Markdown output.  To make this happen, do one of the following:
@@ -23,7 +25,7 @@ PrePub produces a Twine HTML file that, when opened in a browser, shows you the 
 * In [TweeGo](http://www.motoslave.net/tweego/) or another external Twine compiler, install the PrePub story format and compile your story according to [the compiler's documenatation](http://www.motoslave.net/tweego/docs/#getting-started-story-formats).  You will need to open the resulting HTML file in a browser.
 
 Once you have opened the proofing copy/HTML file, you can select your options and click the download button.
-This downloads a Markdown file named something like `prepub123456789.md`.  See 
+This downloads a Markdown file named something like `prepub123456789.md`.
 
 ### Details
 
