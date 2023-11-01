@@ -46,7 +46,8 @@ module.exports = function(grunt) {
 			passages: '{{STORY_DATA}}',
 			year: grunt.template.today('yyyy'),
 			version: pkg.version,
-			script: '<script>' + grunt.file.read('build/prepub.js') + '</script>'
+			script: '<script>' + grunt.file.read('build/prepub.js') + '</script>',
+			scriptcss: '<script>var PrePubCSS = `' + grunt.file.read('src/prepub.css') + '`</script>'
 		};
 
 		grunt.file.write('build/format.html', template(data));
@@ -60,7 +61,8 @@ module.exports = function(grunt) {
 			passages: '<div id="storeArea" data-size="STORY_SIZE" hidden>"STORY"</div>',
 			year: grunt.template.today('yyyy'),
 			version: pkg.version,
-			script: '<script>' + grunt.file.read('build/prepub.js') + '</script>'
+			script: '<script>' + grunt.file.read('build/prepub.js') + '</script>',
+			scriptcss: '<script>var PrePubCSS = `' + grunt.file.read('src/prepub.css') + '`</script>'
 		};
 
 		grunt.file.write('build/header.html', template(data));

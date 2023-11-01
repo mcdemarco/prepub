@@ -6,7 +6,8 @@
   "license": "MIT",
   "repository": "https://bitbucket.org/mcdemarco/prepub",
   "dependencies": {
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "file-saver": "^2.0.5"
   },
   "devDependencies": {
     "grunt": "^1.4.0",

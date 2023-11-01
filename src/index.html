@@ -5,7 +5,6 @@
 			<%= name %>
 		</title>
 		<meta charset="utf-8">
-		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js"></script>
 		<script>
 /**
  * PrePub <%= version %> - Twine Markdown Export Story Format
@@ -32,15 +31,22 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 		</script>
-<%= script %>
+
 		<style>
 		 .info, caption {font-style:italic;}
 		 .info {color: #a5a5a5;}
 		 .indent {padding-left: 1.5em;}
-		 p, table {padding-left: 3em;}
+		 .info.indent {display:inline-block;}
+		 p, table, div {padding-left: 3em;}
 		 table {caption-side:top; color:#333;}
 		 th, td {border: 1px solid #dedede; padding: 3px; text-align:center; font-weight:normal;}
 		 td {font-size: x-large;}
+		 sup {padding-left: 3px;}
+		 .prepub-preview-mode {display:none;}
+		 div#settingsDisplayDiv {margin:0; padding:0;display:none;}
+		 textarea {width: 100%; height:20em;}
+		 textarea.settings {height:16em; width:20em;}
+		 input#rewriteExpression {width:30em;}
 		</style>
 
 	</head>
@@ -65,7 +71,7 @@
 			<input type="radio" id="numbers" name="numbering" value="numbers" />
 			<label for="numbers">Paragraph numbers </label>
 			&nbsp;
-			<span class="info"> Paragraph numbers are arbitrary (though sequential) and are not inserted into links.</span>  
+			<span class="info"> Paragraph numbers are arbitrary (though sequential) and are not necessarily inserted into links.</span>  
 			<br/>
 			<input type="radio" id="symbol" name="numbering" value="symbol" />
 			<label for="symbol">A character divider </label>
@@ -96,37 +102,106 @@
 			<span class="info"> The start passage will remain at the beginning.</span>
 		</p>
 		<p>
-			<input type="checkbox" id="tw2md" name="tw2md" onclick="PrePub.disenable();" />
-			<label for="tw2md">Convert wiki-style markup to markdown from: </label>
+			<input type="checkbox" id="rewrite" name="rewrite" value="1" />
+			<label for="rewrite">Rewrite links </label>
 			&nbsp;
-			<input type="radio" name="source" id="harlowe" value="harlowe" checked/>
-			<label for="harlowe">Harlowe </label>
-			&nbsp;
-			<input type="radio" name="source" id="sugarcube" value="sugarcube" />
-			<label for="sugarcube">Sugarcube </label>
-			&nbsp;
-			<input type="radio" name="source" id="twine1" value="twine1" />
-			<label for="twine1">Twine 1 </label>
-			&nbsp;
-			<input type="radio" name="source" id="chapbook" value="chapbook" />
-			<label for="chapbook">Chapbook </label>
+			<span class="info"> Rewrite links to use paragraph numbers as specified below: <br/>
+				"@@@" represents the original link text from your story, "###" is the paragraph number, and the brackets "[..]" surround the (optional) new link text.<br/>
+				This requires paragraph numbering, above.</span>
 			<br/>
-			<span class="info indent">This should only be necessary if you didn't use a purely Markdown-based story format like Snowman.  (Chapbook uses some minor non-Markdown markup.)</span>
-			<br/>
-			<span class="info indent">It does not convert macros or other scripting.</span>
+			<span class="indent" style="display:inline-block;white-space:nowrap;">
+				<input type="text" id="rewriteExpression" name="rewriteExpression" placeholder="If you @@@, turn to [paragraph ###]." value="" />
+			</span>
 		</p>
+		<p>
+			<input type="checkbox" id="tw2md" name="tw2md" />
+			<label for="tw2md">Convert wiki-style markup to markdown from: </label><br/>
+			<span class="indent" style="display:inline-block;white-space:nowrap;">
+				<input type="radio" name="source" id="chapbook" value="chapbook" />
+				<label for="chapbook">Chapbook</label><sup><a name="fs1" href="#fn1">1</a></sup>
+				&nbsp;
+				<input type="radio" name="source" id="harlowe" value="harlowe" checked/>
+				<label for="harlowe">Harlowe</label><sup><a name="fs2" href="#fn2">2</a></sup>
+				&nbsp;
+				<input type="radio" name="source" id="sugarcube" value="sugarcube" />
+				<label for="sugarcube">Sugarcube</label>
+				&nbsp;
+				<input type="radio" name="source" id="twine1" value="twine1" />
+				<label for="twine1">Twine 1</label><sup><a name="fs3" href="#fn3">3</a></sup>
+				&nbsp;
+				<input type="radio" name="source" id="writingfantasy" value="writingfantasy" />
+				<label for="writingfantasy">WritingFantasy</label><sup><a name="fs4" href="#fn4">4</a></sup>
+			</span>
+			<span class="indent" style="display:inline-block;white-space:nowrap;">
+				<input type="checkbox" name="gordianbook" id="gordianbook" />
+				<label for="gordianbook">Gordian Book</label><sup><a name="fs5" href="#fn5">5</a></sup>
+			</span>
+			<span class="info indent">
+				This should only be necessary if you didn't use a purely Markdown-based story format like Snowman.
+				(It does not convert macros or other scripting.)
+			</span>
+		</p>
+
+		<div id="settingsDisplayDiv">
+			<h3>Settings</h3>
+			<p>
+				<div style="white-space:nowrap;">
+					<div style="display:inline-block;">
+						<b>Currently selected settings</b><br/>
+						<textarea id="settingsTextarea" class="settings"></textarea>
+					</div>
+					<div style="display:inline-block;">
+						<b>Settings found in story</b><br/>
+						<textarea id="storySettingsTextarea" class="settings" placeholder="no settings"></textarea> 
+					</div>
+				</div>
+			</p>
+		</div>
 
 		<h3>Download</h3>
 		<p>
-			<button type="button" onclick="PrePub.convert();">Download</button>
+			<button type="button" id="downloadMarkdownButton">Download Markdown</button>
+			<span class="info indent">See the PrePub README or <a href="http://mcdemarco.net/tools/scree/prepub/" target="_blank">web page</a> for help converting the downloaded markdown file to ePub using Pandoc and PrePub's stylesheet.</span>
 		</p>
-		<p>See the PrePub README or <a href="http://mcdemarco.net/tools/scree/prepub/" target="_blank">web page</a> for help converting the downloaded file to ePub using Pandoc and PrePub's stylesheet.</p>
+
+		<p class="prepub-preview-mode">
+			<button type="button" id="downloadHtmlButton">Download HTML</button>
+			<button type="button" id="downloadEpubButton">Download ePUB</button>
+
+			<span class="info indent">If you are running a local Pandoc server, you can download the HTML preview below or an ePUB here, rather than using the command line.  The command line is recommended, however, and is required to generate PDFs.</span>
+		</p>
+
+		<section class="prepub-preview-mode">
+		<h3>Preview HTML</h3>
+
+		<p>
+			<button type="button" id="refreshButton">Refresh</button>
+
+			<span class="info indent">This is just an approximation of the sort of output you will get from Pandoc.</span>
+		</p>
+
+		<div>
+			<iframe id="theFrame" style="width:99%;height:75vh;"></iframe>
+		</div>
+		</section>
+
+		<hr/>
+		<p>
+			<sup><a name="fn1" href="#fs1">1</a></sup> Chapbook uses some minor non-Markdown markup. This option will also convert forks. <br/>
+			<sup><a name="fn2" href="#fs2">2</a></sup> <a href="https://spiner.readme.io/docs/markdown">Spiner</a> claims that Harlowe uses Markdown, but it does not, so select Harlowe if you used Harlowe markup, and do not check this section at all if you used Markdown.<br/>
+			<sup><a name="fn3" href="#fs3">3</a></sup> Twine 1 story formats used markup similar, but not identical, to Sugarcube's.  (Do not check this option if you are using a modern story format within the Twine 1 editor.)<br/>
+			<sup><a name="fn4" href="#fs4">4</a></sup> <a href="https://sophiehoulden.com/twine/writingfantasy_guide.html#2">WritingFantasy</a> uses some minor non-Harlowe markup.<br/>
+				<sup><a name="fn5" href="#fs5">5</a></sup> <a href="https://gordianbook.art/markdown">Gordian Book</a> has both Harlowe and Sugarcube options, so please select the appropriate one, and also check the Gordian Book box.<br/>
+		</p>
 
 		<pre id="output">
 		
 		</pre>
 		<div id="storyData" style="display: none;">
-<%= passages %>
+			<%= passages %>
 		</div>
+
+		<%= scriptcss %>
+		<%= script %>
 	</body>
 </html>
