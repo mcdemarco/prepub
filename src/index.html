@@ -94,13 +94,25 @@
 		</p>
 
 
-		<h3>Other Options</h3>
+		<h3>Passage Order</h3>
 		<p>
-			<input type="checkbox" id="shuffle" name="shuffle" value="1" />
-			<label for="shuffle">Shuffle passages </label>
+			<input type="radio" id="original" name="passages" value="original" />
+			<label for="original">As-is </label>
 			&nbsp;
-			<span class="info"> The start passage will remain at the beginning.</span>
+			<span class="info"> There will be no rearrangement of passages.</span>
+			<br/>
+			<input type="radio" id="shuffle" name="passages" value="shuffle" />
+			<label for="shuffle">Shuffled </label>
+			&nbsp;
+			<span class="info"> Passages will be shuffled randomly.</span>
+			<br/>
+			<input type="radio" id="alphanum" name="passages" value="alphanum" />
+			<label for="alphanum">Alphanumeric </label>
+			&nbsp;
+			<span class="info"> Passages will be alphabetized and/or placed into numeric order according to their passage names.  The start passage will remain at the beginning.</span>
 		</p>
+
+		<h3>Other Options</h3>
 		<p>
 			<input type="checkbox" id="rewrite" name="rewrite" value="1" />
 			<label for="rewrite">Rewrite links </label>

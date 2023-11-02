@@ -9,7 +9,7 @@ var prePub = {};
 		numbering: "names",
 		symbol: "",
 		path: "",
-		shuffle: false,
+		order: "original",
 		rewrite: false,
 		rewriteExpression: "",
 		source: "markdown",
@@ -262,7 +262,7 @@ var prePub = {};
 			config.numbering = document.querySelector("input[name='numbering']:checked") ? document.querySelector("input[name='numbering']:checked").value : "names";
 			config.symbol =  document.getElementById("symbol") && document.getElementById("symbol").checked && document.getElementById("symbolInput") ? document.getElementById("symbolInput").value.trim() : "";
 			config.path =  document.getElementById("path") && document.getElementById("path").checked && document.getElementById("symbolInput") ? document.getElementById("symbolInput").value.trim() : "";
-			config.shuffle = document.getElementById("shuffle") ? document.getElementById("shuffle").checked : false;
+			config.order = document.querySelector("input[name='passages']:checked") ? document.querySelector("input[name='passages']:checked").value : "original";
 			config.rewrite = document.getElementById("rewrite") ? document.getElementById("rewrite").checked : false;
 			config.rewriteExpression = document.getElementById("rewriteExpression") ? document.getElementById("rewriteExpression").value : "";
 			config.source = document.querySelector("input[name='source']:checked") ? document.querySelector("input[name='source']:checked").value : "markdown";
@@ -287,6 +287,7 @@ var prePub = {};
 				switch (key) {
 
 				case "numbering":
+				case "order":
 					document.querySelector("#" + val).checked = true;
 					break;
 
@@ -295,7 +296,6 @@ var prePub = {};
 					document.querySelector("#symbolInput").value = val;
 					break;
 					
-				case "shuffle":
 				case "rewrite":
 				case "gordianBook":
 				  document.querySelector("#" + key).checked = val;
@@ -481,7 +481,7 @@ var prePub = {};
 				//Remove start passage from list.
 				var start = reorderedPassages.splice(startIdx,1);
 
-				if (config.shuffle) {
+				if (config.order === "shuffle") {
 					//Shuffle the others.
 					var r, s, temp;
 					for (s = reorderedPassages.length - 1; s > 0; s--) {
@@ -490,6 +490,13 @@ var prePub = {};
 						reorderedPassages[s] = reorderedPassages[r];
 						reorderedPassages[r] = temp;
 					}
+				} else if (config.order === "alphanum") {
+					//Sort the others.
+					reorderedPassages = reorderedPassages.sort(
+						function(a,b) {
+							return a.name.localeCompare(b.name);
+						})
+					;
 				}
 
 				//Reinsert start at beginning.
