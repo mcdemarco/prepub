@@ -308,10 +308,11 @@ var prePub = {};
 				case "source":
 				  if (val == "markdown") {
 						document.querySelector("#tw2md").checked = false;
-						document.querySelectorAll("[name=source])").checked = false;
+						document.querySelectorAll("[name=source]").checked = false;
 					} else {
 						document.querySelector("#tw2md").checked = true;
-						document.querySelector("#" + val).checked = true;
+						if (val)
+							document.querySelector("#" + val).checked = true;
 					}
 					break;
 
@@ -494,7 +495,7 @@ var prePub = {};
 					//Sort the others.
 					reorderedPassages = reorderedPassages.sort(
 						function(a,b) {
-							return a.name.localeCompare(b.name);
+							return a.name.localeCompare(b.name,undefined,{sensitivity:"base",numeric:true});
 						})
 					;
 				}
@@ -624,7 +625,9 @@ var prePub = {};
 				if (content) {
 					var twSource, gordianbook;
 					if (config.source != "markdown") {
-						twSource = config.source ? config.source : "harlowe";
+						if (!config.source) {
+							twSource = config.source ? config.source : "harlowe";
+						}
 						gordianbook = config.gordianbook;
 					}
 
@@ -638,7 +641,7 @@ var prePub = {};
 					content = content.replace(/\\>/gm, "&gt;");
 					content = content.replace(/\\n\\n/gm, "\n\n");
 					content = markdownLinks(content, rewriteHash);
-					if (twSource) {
+					if (twSource && twSource != "markdown") {
 						content = detwiddle(content, twSource, gordianbook);
 					}
 				}

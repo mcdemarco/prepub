@@ -51,7 +51,7 @@
 
 	</head>
 	<body>
-		<h1>PrePub Conversion of {{STORY_NAME}}</h1>
+		<h1>PrePub Conversion of <em>{{STORY_NAME}}</em></h1>
 
 		<p>Certain options may require the PrePub stylesheet.  You can also change centering, size, and capitalization of the headers there.</p>
 
@@ -99,7 +99,7 @@
 			<input type="radio" id="original" name="passages" value="original" />
 			<label for="original">As-is </label>
 			&nbsp;
-			<span class="info"> There will be no rearrangement of passages.</span>
+			<span class="info"> There will be no additional rearrangement of passages.</span>
 			<br/>
 			<input type="radio" id="shuffle" name="passages" value="shuffle" />
 			<label for="shuffle">Shuffled </label>
@@ -109,8 +109,9 @@
 			<input type="radio" id="alphanum" name="passages" value="alphanum" />
 			<label for="alphanum">Alphanumeric </label>
 			&nbsp;
-			<span class="info"> Passages will be alphabetized and/or placed into numeric order according to their passage names.  The start passage will remain at the beginning.</span>
+			<span class="info"> Passages will be alphabetized and/or put in numeric order according to their (original) passage names.</span>
 		</p>
+		<p class="info">In all cases, the Start passage will appear at the beginning, and, if present, StoryColophon will appear at the end.</p>
 
 		<h3>Other Options</h3>
 		<p>
@@ -132,7 +133,7 @@
 				<input type="radio" name="source" id="chapbook" value="chapbook" />
 				<label for="chapbook">Chapbook</label><sup><a name="fs1" href="#fn1">1</a></sup>
 				&nbsp;
-				<input type="radio" name="source" id="harlowe" value="harlowe" checked/>
+				<input type="radio" name="source" id="harlowe" value="harlowe" />
 				<label for="harlowe">Harlowe</label><sup><a name="fs2" href="#fn2">2</a></sup>
 				&nbsp;
 				<input type="radio" name="source" id="sugarcube" value="sugarcube" />

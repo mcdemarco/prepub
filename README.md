@@ -6,7 +6,9 @@ The PrePub web page is [here](http://mcdemarco.net/tools/scree/prepub/).  You ca
 
 ## Installation
 
-To add PrePub to Twine 2, use this URL (under Formats > Add a New Format): `https://mcdemarco.net/tools/scree/prepub/format.js`.  Also make PrePub your default proofing format (under Formats > Proofing Formats).
+To add PrePub to Twine 2.4 or later, use this URL (under Twine > Story Formats > Add): `https://mcdemarco.net/tools/scree/prepub/format.js`.  Once installed, click on PrePub, then on **Use to Proof Stories** to make it your default proofing format.
+
+To add PrePub to an earlier Twine 2, use this URL (under Formats > Add a New Format): `https://mcdemarco.net/tools/scree/prepub/format.js`.  Also make PrePub your default proofing format (under Formats > Proofing Formats).
 
 To add PrePub to Twine 1, create a new folder called `prepub` inside your targets folder, then download [this file](https://mcdemarco.net/tools/scree/prepub/header.html):
 `https://mcdemarco.net/tools/scree/prepub/header.html`
@@ -20,7 +22,8 @@ To see Pandoc previews inside of PrePub, you should install pandoc version 3.0 o
 
 PrePub produces a Twine HTML file that, when opened in a browser, shows you the PrePub options and lets you download its Pandoc Markdown output.  To make this happen, do one of the following:
 
-* In **Twine 2**, open your story, then click on the story menu arrow next to your story title (in the lower left hand corner of the UI) and select View Proofing Copy.
+* In **Twine 2.4** or later, open your story, then click Build, then Proof.
+* Inan earlier **Twine 2**, open your story, then click on the story menu arrow next to your story title (in the lower left hand corner of the UI) and select View Proofing Copy.
 * In **Twine 1**, open or create a story (under the File menu).  Then, in the Story menu under Story Formats, select PrePub as the story format.  Choose Test Play.  (You may need to restart Twine 1 if you installed PrePub while it was running.)  If you Publish or Build to a file instead, you will need to manually open the resulting HTML file in a browser.
 * In [TweeGo](http://www.motoslave.net/tweego/) or another external Twine compiler, install the PrePub story format and compile your story according to [the compiler's documenatation](http://www.motoslave.net/tweego/docs/#getting-started-story-formats).  You will need to open the resulting HTML file in a browser.
 
@@ -29,19 +32,23 @@ This downloads a Markdown file named something like `prepub123456789.md`.
 
 ### Details
 
-PrePub converts wiki-style links in your story to [implicit header references](https://pandoc.org/MANUAL.html#extension-implicit_header_references) (part of Pandoc's Markdown extensions) in the Markdown output.  It moves your start passage to the start of the file, if it isn't there already, and your colophon (*i.e.*, any passage titled StoryColophon) to the end.  It removes common special passages but otherwise leaves the passages of your story in place and in order, unless you choose to shuffle them.
+PrePub converts wiki-style links in your story to [implicit header references](https://pandoc.org/MANUAL.html#extension-implicit_header_references) (part of Pandoc's Markdown extensions) in the Markdown output.  It moves your start passage to the start of the file, if it isn't there already, and your colophon (*i.e.*, any passage titled StoryColophon) to the end.  It removes common special passages but otherwise leaves the passages of your story in place and in order, unless you choose to reorder them.
 
 Markdown styling is preserved by PrePub and understood by Pandoc.  Basic old-style wiki formatting (which is optional in Harlowe and expected in SugarCube) can be removed with the appropriate option, but you may have to manually convert any advanced formatting before compiling to EPUB.  HTML may or may not be preserved through the conversion process.
 
 ### Options
 
-For passage headers, the options include: no passage headers at all, the passage name (the default), sequential numbering, a single character divider, or an image divider.
+For passage headers, the options include: no passage headers at all, the passage name (the default), paragraph numbering, a single character divider, or an image divider.
 
-There is an option to shuffle passages; otherwise the passages appear in the same order in the text as in the source file.
+There is an option to reorder passages by shuffling them or sorting them alphanumerically; otherwise the passages appear in the same order in the text as in the source file.  Alphanumeric sorting is locale-based and should correctly sort numbers, including for complex cases like subsection numbering.
 
-There is an option to convert wiki-style markup (as used in non-markdown-based story formats) to Markdown.  You will need to choose the particular story format and/or tool you used.  (If it partially supported Markdown, that Markdown will be preserved.)
+There is an option to rewrite your links to use paragraph numbers (reordered or not) a la [WritingFantasy](https://sophiehoulden.com/twine/writingfantasy_guide.html).  This requires the paragraph numbering option.
 
-After downloading the Markdown file, the PrePub GUI remains open.  To select different options, choose the appropriate radio button and/or checkbox, then click `Download` to get a new Markdown file with a slightly different name.
+There is an option to convert wiki-style markup (as used in non-markdown-based story formats) to Markdown.  You will need to choose the particular story format and/or tool you used.  (If the story format partially supported Markdown, that Markdown will be preserved.)
+
+After downloading the Markdown file, the PrePub GUI remains open.  To select different options, choose the appropriate radio button and/or checkbox, then click `Download` to get a new Markdown file with a slightly different name.  If previews are available, click the Refresh button to update the preview.
+
+Your current options are listed in the PrePub GUI.  Copy the `:: PrePubSettings` passage under Settings > Currently Selected Settings into your story file to save them as defaults.
 
 
 ## Making an EPUB
@@ -74,7 +81,7 @@ For help adding more arguments to the Pandoc defaults file, see [the Pandoc User
 
 ## Making other formats
 
-You can convert your EPUB directly to Kindle using [KindleGen](https://www.amazon.com/gp/feature.html?docId=1000765211) or the [Kindle Previewer](http://www.amazon.com/kindleformat/kindlepreviewer).  (Although Amazon now prefers EPUB to mobi, there is still Amazon-specific formatting to consider; another option for that is [Vellum](https://vellum.pub).)
+You can convert your EPUB directly to Kindle using [KindleGen](https://www.amazon.com/gp/feature.html?docId=1000765211) or the [Kindle Previewer](http://www.amazon.com/kindleformat/kindlepreviewer).  Although Amazon now prefers EPUB to mobi, there is still Amazon-specific formatting to consider; another option for that is [Vellum](https://vellum.pub).
 
 Defaults files for producing HTML or PDF output with PrePub are also available.  See the comments in [`html.yaml`](https://mcdemarco.net/tools/scree/prepub/html.yaml) and [`pdf.yaml`](https://mcdemarco.net/tools/scree/prepub/pdf.yaml) for the corresponding command line invocation if you need it.
 
@@ -101,20 +108,21 @@ There are a lot of little markup gotchas to using Markdown in general, and Pando
 While EPUB nominally supports JavaScript coding, this support is optional and thus not available in all EPUB readers.  PrePub ignores any JavaScript or macros.  In addition:
 
 * It does not handle multiple authors, or check other locations than StoryAuthor for the author.
-* It does not rewrite your links to use its paragraph numbers (shuffled or not) a la [WritingFantasy](https://sophiehoulden.com/twine/writingfantasy_guide.html).
 * It does not warn you about duplicate implicit header references.
 * It doesn't have a preface option, and the colophon option could use a tag approach (instead of or in addition to special passaging).
-* It would be nice to respect some of the special passages and tags introduced in [Gordian Book](https://gordianbook.art), [WritingFantasy](https://sophiehoulden.com/twine/writingfantasy_guide.html), and [Spiner](https://spiner.readme.io).
+* It would be nice to respect more of the special passages and tags introduced in [Gordian Book](https://gordianbook.art), [WritingFantasy](https://sophiehoulden.com/twine/writingfantasy_guide.html), and [Spiner](https://spiner.readme.io).
 * It would be nice to sub-shuffle and anchor intermediate passages as in [pangamebook](https://github.com/lifelike/pangamebook).
 * It would be theoretically possible to honor include/display/print-style macros.
-* It would be nice to take the options from a settings passage.  (They currently can be put into a query string.)
-* It would be nice to show a preview.
 
 ## Versions
 
+### 1.2.0 [Under development.]
+
+Add pandoc previews, a settings passage, and alphanumeric sorting,
+
 ### 1.1.2
 
-Add (partial) wiki/custom markup parsing. [Current version.]
+Add (partial) wiki/custom markup parsing.
 
 ### 1.1.1
 
