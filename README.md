@@ -42,7 +42,7 @@ For passage headers, the options include: no passage headers at all, the passage
 
 There is an option to reorder passages by shuffling them or sorting them alphanumerically; otherwise the passages appear in the same order in the text as in the source file.  Alphanumeric sorting is locale-based and should correctly sort numbers, including for complex cases like subsection numbering.
 
-There is an option to rewrite your links to use paragraph numbers (reordered or not) a la [WritingFantasy](https://sophiehoulden.com/twine/writingfantasy_guide.html).  This requires the paragraph numbering option.
+There is an option to rewrite your links.  You can use it to supplement or replace your links with paragraph numbers, *e.g.,* "turn to paragraph 6" (requires the paragraph numbering option), and/or to add boilerplate text to links.
 
 There is an option to convert wiki-style markup (as used in non-markdown-based story formats) to Markdown.  You will need to choose the particular story format and/or tool you used.  (If the story format partially supported Markdown, that Markdown will be preserved.)
 
