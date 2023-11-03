@@ -39,19 +39,24 @@ var prePub = {};
 		};
 
 		function convert(toType, download, init) {
-
-			if (!init)
+			if (!init) {
 				context.settings.parseForm();
+			}
 
+			//Convert story to pandoc-flavored markdown.
 			var output = context.story.convert();
 			
+			//Postprocess.
 			if (toType == 'markdown') {
-				context.pandoc.markdown2('html', output);
 				if (download) {
 					downloader('markdown', output);
 				} 
-			} else
+				//We attempt to fill in the preview, and will handle the error if there's no server available.
+				context.pandoc.markdown2('html', output);
+			} else {
+				//Do secondary conversion with server.
 				context.pandoc.markdown2(toType, output, download);
+			}
 		};
 	
 		function downloadMarkdown() {
@@ -114,7 +119,7 @@ var prePub = {};
 			context.settings.disenable();
 			activateForm();
 
-			//Initial conversion.
+			//Initial conversion of story.
 			context.control.convert('markdown', config.autodownload, true);
 		};
 
@@ -178,7 +183,7 @@ var prePub = {};
 				//fetch( './pandoc-server.cgi', options ) //cgi version requires local webserver setup
 
 				//for freestanding server just type ./pandoc-server in the terminal.
-				//cors issues fixed in nightly 11/10/22; run nightlies for now
+				//cors issues fixed in nightly 11/10/22; run 3.0 or higher
 				fetch( 'http://localhost:3030/', options )
 					.then( response => { 
 						if (response.ok) {
@@ -265,7 +270,7 @@ var prePub = {};
 			config.order = document.querySelector("input[name='passages']:checked") ? document.querySelector("input[name='passages']:checked").value : "original";
 			config.rewrite = document.getElementById("rewrite") ? document.getElementById("rewrite").checked : false;
 			config.rewriteExpression = document.getElementById("rewriteExpression") ? document.getElementById("rewriteExpression").value : "";
-			config.source = document.querySelector("input[name='source']:checked") ? document.querySelector("input[name='source']:checked").value : "markdown";
+			config.source = document.getElementById("tw2md").checked && document.querySelector("input[name='source']:checked") ? document.querySelector("input[name='source']:checked").value : "markdown";
 			config.gordianbook = document.getElementById("gordianbook") ? document.getElementById("gordianbook").checked : false;
 
 			//Also show changes.
@@ -331,15 +336,16 @@ var prePub = {};
 			try {
 				ppSettings = localStorage.getItem("prepub-settings" + (ifid() ? "-" + ifid() : ""));
 				if (ppSettings)
-					return JSON.parse(ppSettings);
+					merge(JSON.parse(ppSettings));
+					return; 
 			} catch(e) {
 				console.log("Error checking local storage for previous PrePub settings for this story: " + e.description);
 			}
-			return {};
+			return;
 		};
 
 		function merge(ppSettings) {
-			//Incorporate settings object into config object.
+			//Incorporate pre-parsed settings object into config object.
 			Object.entries(ppSettings).forEach(function(arry, index) {
 				config[arry[0]] = arry[1];
 			});
@@ -350,57 +356,58 @@ var prePub = {};
 			for (var l=0; l<settingsArray.length; l++) {
 				setting = settingsArray[l].split("=");
 				if (setting.length > 0) {
-					config[setting] = setting.length > 1 ? decodeURIComponent(setting[1]) : true;
+					config[setting[0]] = setting.length > 1 ? decodeURIComponent(setting[1]) : true;
 				}
 			}
 		};
 
 		function read() {
 
-			var PrePubSettings, StorySettings, ppSettings;
+			var prePubSettings, storySettings, ppSettings;
 
-			//Check URL for settings.
-			if (window.location.search && window.location.search.split("?")[1].length > 0) {
-				mergeFromURL(window.location.search.split("?")[1].split("&"));
-				return;
-			} 
-				
 			//Check story for settings.
 			if (window.document.getElementById("storeArea"))
-				PrePubSettings = window.document.getElementById("storeArea").querySelector('div[tiddler="PrePubSettings"]');
+				prePubSettings = window.document.getElementById("storeArea").querySelector('div[tiddler="PrePubSettings"]');
 			else 
-				PrePubSettings = window.document.querySelector('tw-passagedata[name="PrePubSettings"]');
+				prePubSettings = window.document.querySelector('tw-passagedata[name="PrePubSettings"]');
 			
-			if (PrePubSettings) {
+			if (prePubSettings) {
 				//Doesn't require prepub: label or single-line layout but must still parse as a JSON object.
-				ppSettings = PrePubSettings.innerText;
+				ppSettings = prePubSettings.innerText;
 			} else {
 				//Parse the StorySettings for prepub presets.  Must be a single line.  May fail mysteriously under Tweego 1.3.
 				if (window.document.getElementById("storeArea"))
-					StorySettings = window.document.getElementById("storeArea").querySelector('div[tiddler="StorySettings"]');
+					storySettings = window.document.getElementById("storeArea").querySelector('div[tiddler="StorySettings"]');
 				else 
-					StorySettings = window.document.querySelector('tw-passagedata[name="StorySettings"]');
+					storySettings = window.document.querySelector('tw-passagedata[name="StorySettings"]');
 				
-				if (StorySettings && StorySettings.innerText && StorySettings.innerText.indexOf("prepub:") > -1) {
-					ppSettings = (StorySettings.innerText.split("prepub:")[1]).split("\n")[0];
+				if (storySettings && storySettings.innerText && storySettings.innerText.indexOf("prepub:") > -1) {
+					ppSettings = (storySettings.innerText.split("prepub:")[1]).split("\n")[0];
 				}
 			}
-			
+	
 			if (ppSettings) {
 				try {
 					ppSettings = JSON.parse(ppSettings);
 					//Also write to the appropriate textarea.
 					document.getElementById("storySettingsTextarea").value = ":: PrePubSettings\r\n\r\n" + JSON.stringify(ppSettings, null, '\t') + "\r\n";
+					merge(ppSettings);
 				} catch(e) {
 					console.log("Found but couldn't parse prepub settings from story: " + ppSettings);
-					ppSettings = loadFromStorage();
 				}
-			} else {
-				ppSettings = loadFromStorage();
 			}
 
-			merge(ppSettings);
+			//Check URL for settings and override.
+			if (window.location.search && window.location.search.split("?")[1].length > 0) {
+				mergeFromURL(window.location.search.split("?")[1].split("&"));
+				return;
+			} 
 
+
+			if (!ppSettings) {
+				//If we found no settings, try local storage.
+				loadFromStorage();
+			}
 		};
 
 		function save() {

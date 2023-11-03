@@ -1,6 +1,6 @@
 # PrePub
 
-PrePub is a Twine 1 and 2 proofing format for converting simple Twine stories to a flat (Pandoc extended) Markdown file, useful for conversion to EPUB, PDF, or other formats via Pandoc.  You will need to install [Pandoc](https://pandoc.org/), preferably version 2.8.0.1 or later, for the EPUB step.
+PrePub is a Twine 1 and 2 proofing format for converting simple Twine stories to a flat (Pandoc extended) Markdown file, useful for conversion to EPUB, PDF, or other formats via Pandoc.  You will need to install [Pandoc](https://pandoc.org/), preferably version 3.0 or later, for the final conversion step.
 
 The PrePub web page is [here](http://mcdemarco.net/tools/scree/prepub/).  You can get a demo EPUB [here](http://mcdemarco.net/tools/scree/test-prepub.epub).
 
@@ -14,9 +14,11 @@ To add PrePub to Twine 1, create a new folder called `prepub` inside your target
 `https://mcdemarco.net/tools/scree/prepub/header.html`
 and place it inside the new `prepub` folder.  See [the Twine cookbook](https://twinery.org/cookbook/twine1/terms/storyformats.html) for more information about installing and using story formats in Twine 1.
 
-You should also download [`prepub.css`](https://mcdemarco.net/tools/scree/prepub/prepub.css), especially if you intend to use paragraph numbering or other options, and optionally [`epub.yaml`](https://mcdemarco.net/tools/scree/prepub/epub.yaml), some convenient defaults for Pandoc.  It's also handy to try your results out as HTML first, since it's closely related to EPUB format; for conversion to HTML please use [`html.yaml`](https://mcdemarco.net/tools/scree/prepub/html.yaml) to avoid [gotchas](#Gotchas).
+You should also download [`prepub.css`](https://mcdemarco.net/tools/scree/prepub/prepub.css), especially if you intend to use paragraph numbering or other options, and optionally [`epub.yaml`](https://mcdemarco.net/tools/scree/prepub/epub.yaml), for some convenient defaults for Pandoc.  It's also handy to try your results out as HTML first, since it's closely related to EPUB format.  For conversion to HTML please use [`html.yaml`](https://mcdemarco.net/tools/scree/prepub/html.yaml) to avoid [gotchas](#Gotchas).
 
-To see Pandoc previews inside of PrePub, you should install pandoc version 3.0 or greater, then run `pandoc-server` in a local terminal/shell.
+### Previews
+
+Pandoc 3.0 or later comes with a local server that you can use to see a preview of your output within the PrePub page itself.  Run `pandoc-server` in a terminal/shell to see previews.  (Check the console if you do not see a preview when opening the page.)  Preview functionality requires pandoc version 3.0 or greater.
 
 ## Use
 
@@ -46,9 +48,15 @@ There is an option to rewrite your links.  You can use it to supplement or repla
 
 There is an option to convert wiki-style markup (as used in non-markdown-based story formats) to Markdown.  You will need to choose the particular story format and/or tool you used.  (If the story format partially supported Markdown, that Markdown will be preserved.)
 
+#### Saving Your Settings
+
 After downloading the Markdown file, the PrePub GUI remains open.  To select different options, choose the appropriate radio button and/or checkbox, then click `Download` to get a new Markdown file with a slightly different name.  If previews are available, click the Refresh button to update the preview.
 
 Your current options are listed in the PrePub GUI.  Copy the `:: PrePubSettings` passage under Settings > Currently Selected Settings into your story file to save them as defaults.
+
+For automation purposes, you can pass settings into PrePub using a search string in the url, *e.g.,*
+`mystory.html?numbering=names&source=harlowe&gordianbook&autodownload`    
+These will override the PrePubSettings passage, if present.  If neither the PrePubSettings passage nor search string settings are present, PrePub may attempt to retrieve recent settings from local storage.
 
 
 ## Making an EPUB
@@ -100,7 +108,7 @@ There are a lot of little markup gotchas to using Markdown in general, and Pando
 
 * If you did not leave blank lines before blockquotes (including each nested blockquote), you will need to use the `-f markdown-blank_before_blockquote` option.
 * If you do not want your HTML (or converted) comments to appear in the output as hidden HTML comments, you will need the `--strip-comments` option.
-* If you want to produce HTML without the provided defaults file ( [`html.yaml`](https://mcdemarco.net/tools/scree/prepub/html.yaml)), do not omit the flags included in the command line example in that file, and especially do not omit `--standalone`.
+* If you want to produce HTML without the provided defaults file ([`html.yaml`](https://mcdemarco.net/tools/scree/prepub/html.yaml)), do not omit the flags included in the command line example in that file, and especially do not omit `--standalone`.
 * Because of the use of implicit header references in Pandoc, passage names that Twine accepts as distinct may become indistinguishable.  Make sure that no passage names are distinguished solely by punctuation or capitalization.
 
 ### What it doesn't do but should (the to-do list)
