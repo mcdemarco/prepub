@@ -15,7 +15,7 @@ var prePub = {};
 		source: "markdown",
 		gordianbook: false,
 		autodownload: false,
-		showSettings: true
+		showSettings: false
 	};
 
 	var specialPassageList = ["StoryTitle", "StoryIncludes", "StoryColophon", "StoryData",
@@ -127,7 +127,8 @@ var prePub = {};
 
 		function activateForm() {
 			document.getElementById("tw2md").addEventListener('click', context.settings.disenable, false);
-			document.getElementById("rewrite").addEventListener('change', context.settings.checkRewrite, false);
+			//document.getElementById("rewrite").addEventListener('change', context.settings.checkRewrite, false);
+			document.getElementById("showSettings").addEventListener('change', context.settings.show, false);
 
 			//Not actually part of the settings form.
 			document.getElementById("downloadMarkdownButton").addEventListener('click', context.control.downloadMarkdown, false);
@@ -239,10 +240,12 @@ var prePub = {};
 			checkRewrite: checkRewrite,
 			disenable: disenable,
 			load: load,
-			parseForm: parseForm
+			parseForm: parseForm,
+			show: show
 		};
 
 		function checkRewrite() {
+			//No longer necessary.
 			if (document.querySelector('#rewrite').checked)
 				document.querySelector('#numbers').checked = true;
 		};
@@ -279,11 +282,18 @@ var prePub = {};
 			save();
 		}
 
+		function show() {
+			var toggle = !!document.getElementById("showSettings").checked;
+			config.showSettings = toggle;
+			showSettingsBlock(toggle);
+		};
 
 		//private
 
 		function apply() {
 			var key, val;
+			//		console.log(JSON.stringify(config));
+
 			//Apply the possibly changed settings from config to the form.
 			Object.entries(config).forEach(function(arry, index) {
 				key = arry[0];
@@ -298,11 +308,16 @@ var prePub = {};
 
 				case "symbol":
 				case "path":
-					document.querySelector("#symbolInput").value = val;
+					if (val) {
+						document.querySelector("#symbol").checked = (key == "symbol");
+						document.querySelector("#image").checked = (key == "path");
+						document.querySelector("#symbolInput").value = val;
+					}
 					break;
 					
 				case "rewrite":
 				case "gordianBook":
+				case "showSettings":
 				  document.querySelector("#" + key).checked = val;
 					break;
 
@@ -419,13 +434,14 @@ var prePub = {};
 			}
 		};
 
-		function show() {
+		function showSettingsBlock(toggle) {
 			//Presence of setting determines presence of element.
-			if (config.showSettings) {
-				document.getElementById("settingsDisplayDiv").style.display = "block";
+			document.getElementById("settingsDisplayDiv").style.display = toggle ? "block" : "none";
+			if (toggle) {
 				document.getElementById("settingsTextarea").value = ":: PrePubSettings\r\n\r\n" + JSON.stringify(config, null, '\t') + "\r\n";
 			}
 		};
+
 
 	})();
 

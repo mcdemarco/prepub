@@ -52,9 +52,9 @@ There is an option to convert wiki-style markup (as used in non-markdown-based s
 
 After downloading the Markdown file, the PrePub GUI remains open.  To select different options, choose the appropriate radio button and/or checkbox, then click `Download` to get a new Markdown file with a slightly different name.  If previews are available, click the Refresh button to update the preview.
 
-Your current options are listed in the PrePub GUI.  Copy the `:: PrePubSettings` passage under Settings > Currently Selected Settings into your story file to save them as defaults.
+To save your selected options, click on Show Settings in the PrePub GUI.  Copy the `:: PrePubSettings` passage under Currently Selected Settings into your story file to save them.
 
-For automation purposes, you can pass settings into PrePub using a search string in the url, *e.g.,*
+For automation purposes, you can also pass settings into PrePub using a search string in the url, *e.g.,*
 `mystory.html?numbering=names&source=harlowe&gordianbook&autodownload`    
 These will override the PrePubSettings passage, if present.  If neither the PrePubSettings passage nor search string settings are present, PrePub may attempt to retrieve recent settings from local storage.
 

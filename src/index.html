@@ -96,7 +96,7 @@
 
 		<h3>Passage Order</h3>
 		<p>
-			<input type="radio" id="original" name="passages" value="original" />
+			<input type="radio" id="original" name="passages" value="original" checked />
 			<label for="original">As-is </label>
 			&nbsp;
 			<span class="info"> There will be no additional rearrangement of passages.</span>
@@ -155,9 +155,12 @@
 			</span>
 		</p>
 
-		<div id="settingsDisplayDiv">
-			<h3>Settings</h3>
-			<p>
+		<p>
+			<input type="checkbox" id="showSettings" name="showSettings" />
+			<label for="showSettings">Show settings </label>
+			&nbsp;
+			<span class="info"> This only affects the PrePub user interface.</span>
+				<div id="settingsDisplayDiv">
 				<div style="white-space:nowrap;">
 					<div style="display:inline-block;">
 						<b>Currently selected settings</b><br/>
@@ -168,8 +171,8 @@
 						<textarea id="storySettingsTextarea" class="settings" placeholder="no settings"></textarea> 
 					</div>
 				</div>
-			</p>
-		</div>
+			</div>
+		</p>
 
 		<h3>Download</h3>
 		<p>
